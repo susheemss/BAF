@@ -1,0 +1,22 @@
+﻿# Node/Next
+frontend/node_modules/
+frontend/.next/
+
+# Python
+backend/__pycache__/
+backend/uploads/
+
+# Environment
+**/.env
+**/.env.*
+
+# Local data
+*.xlsx
+*.xls
+*.csv
+
+# OS
+.DS_Store
+Thumbs.db
+
+node_modules/

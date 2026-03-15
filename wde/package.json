@@ -1,0 +1,15 @@
+{
+    "name":  "wde",
+    "private":  true,
+    "scripts":  {
+                    "dev:all":  "concurrently \"npm run dev --prefix frontend\" \"npm run dev:clean --prefix backend\"",
+                    "dev:frontend":  "npm run dev --prefix frontend",
+                    "dev:backend":  "npm run dev --prefix backend",
+                    "dev:backend:clean":  "npm run dev:clean --prefix backend",
+                    "git:auto-sync":  "powershell -ExecutionPolicy Bypass -File scripts/auto-sync.ps1",
+                    "git:promote-main":  "powershell -ExecutionPolicy Bypass -File scripts/promote-main.ps1"
+                },
+    "devDependencies":  {
+                            "concurrently":  "^9.1.2"
+                        }
+}
