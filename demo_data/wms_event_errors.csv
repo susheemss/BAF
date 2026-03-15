@@ -1,0 +1,121 @@
+event_id,timestamp,warehouse,event_type,shift,team,resolved
+EV-0001,2024-11-18 06:54:00,DEL,Conveyor Jam,Shift B,Team 1,Yes
+EV-0002,2025-02-03 18:29:00,BLR,Scan Failure,Shift A,Team 1,Yes
+EV-0003,2025-01-27 16:03:00,DEL,WMS Timeout,Shift A,Team 3,No
+EV-0004,2024-11-21 10:25:00,MUM,Pick Path Error,Shift A,Team 3,Yes
+EV-0005,2025-01-06 10:15:00,MUM,RF Gun Disconnected,Shift A,Team 3,No
+EV-0006,2024-09-09 14:38:00,MUM,Scan Failure,Shift A,Team 1,No
+EV-0007,2025-01-14 11:36:00,MUM,WMS Timeout,Shift A,Team 3,Yes
+EV-0008,2024-10-07 07:12:00,DEL,Conveyor Jam,Shift B,Team 1,No
+EV-0009,2025-01-17 16:16:00,BLR,Pick Path Error,Shift A,Team 2,No
+EV-0010,2024-09-18 07:05:00,BLR,Pick Path Error,Shift A,Team 1,Yes
+EV-0011,2025-02-01 10:55:00,BLR,Scan Failure,Shift C,Team 2,Yes
+EV-0012,2025-02-17 15:18:00,DEL,Label Print Error,Shift B,Team 3,Yes
+EV-0013,2025-02-07 15:47:00,BLR,Scan Failure,Shift C,Team 3,Yes
+EV-0014,2024-10-06 09:35:00,BLR,Pick Path Error,Shift B,Team 3,Yes
+EV-0015,2024-12-29 12:54:00,MUM,Scan Failure,Shift C,Team 2,Yes
+EV-0016,2025-01-13 15:20:00,DEL,Label Print Error,Shift B,Team 1,No
+EV-0017,2024-10-25 15:39:00,MUM,RF Gun Disconnected,Shift A,Team 3,Yes
+EV-0018,2024-11-13 10:42:00,BLR,Pick Path Error,Shift A,Team 1,No
+EV-0019,2024-09-26 14:12:00,MUM,Label Print Error,Shift A,Team 3,No
+EV-0020,2025-02-18 09:40:00,BLR,Pick Path Error,Shift B,Team 3,Yes
+EV-0021,2024-10-17 12:48:00,MUM,Label Print Error,Shift C,Team 1,Yes
+EV-0022,2024-12-30 07:22:00,MUM,RF Gun Disconnected,Shift A,Team 3,Yes
+EV-0023,2024-10-01 09:14:00,DEL,Scan Failure,Shift B,Team 3,Yes
+EV-0024,2024-09-15 11:28:00,MUM,WMS Timeout,Shift B,Team 2,Yes
+EV-0025,2025-01-30 08:45:00,BLR,RF Gun Disconnected,Shift C,Team 3,Yes
+EV-0026,2024-09-09 19:14:00,DEL,Label Print Error,Shift C,Team 2,Yes
+EV-0027,2024-12-22 10:02:00,MUM,RF Gun Disconnected,Shift C,Team 1,Yes
+EV-0028,2025-02-21 19:00:00,DEL,WMS Timeout,Shift A,Team 2,Yes
+EV-0029,2025-01-04 14:30:00,DEL,RF Gun Disconnected,Shift C,Team 1,Yes
+EV-0030,2025-01-31 13:42:00,DEL,WMS Timeout,Shift B,Team 2,Yes
+EV-0031,2024-09-17 09:59:00,MUM,Conveyor Jam,Shift C,Team 2,Yes
+EV-0032,2024-11-06 17:23:00,DEL,Pick Path Error,Shift C,Team 2,Yes
+EV-0033,2024-10-29 13:22:00,DEL,Conveyor Jam,Shift B,Team 3,Yes
+EV-0034,2024-11-16 16:51:00,BLR,RF Gun Disconnected,Shift A,Team 2,Yes
+EV-0035,2024-12-17 16:53:00,BLR,RF Gun Disconnected,Shift A,Team 3,Yes
+EV-0036,2025-01-12 11:06:00,DEL,Scan Failure,Shift B,Team 3,Yes
+EV-0037,2024-12-31 20:15:00,DEL,RF Gun Disconnected,Shift B,Team 1,Yes
+EV-0038,2024-12-27 12:18:00,BLR,WMS Timeout,Shift B,Team 1,No
+EV-0039,2024-12-04 06:42:00,MUM,RF Gun Disconnected,Shift A,Team 3,No
+EV-0040,2024-10-22 14:47:00,DEL,Scan Failure,Shift C,Team 1,Yes
+EV-0041,2024-12-21 11:44:00,DEL,Label Print Error,Shift B,Team 2,No
+EV-0042,2024-12-19 06:15:00,BLR,Conveyor Jam,Shift C,Team 3,Yes
+EV-0043,2024-12-06 09:44:00,DEL,Label Print Error,Shift C,Team 3,Yes
+EV-0044,2024-11-02 10:39:00,MUM,Label Print Error,Shift B,Team 2,Yes
+EV-0045,2024-09-14 11:04:00,MUM,Conveyor Jam,Shift C,Team 2,No
+EV-0046,2025-02-11 08:25:00,DEL,RF Gun Disconnected,Shift C,Team 1,No
+EV-0047,2024-10-22 18:10:00,MUM,Pick Path Error,Shift C,Team 1,Yes
+EV-0048,2024-09-23 12:07:00,BLR,RF Gun Disconnected,Shift C,Team 3,Yes
+EV-0049,2024-10-12 17:59:00,BLR,RF Gun Disconnected,Shift C,Team 2,No
+EV-0050,2024-12-28 17:16:00,MUM,WMS Timeout,Shift C,Team 1,Yes
+EV-0051,2025-02-09 13:01:00,DEL,Pick Path Error,Shift C,Team 2,No
+EV-0052,2024-11-11 13:35:00,MUM,Pick Path Error,Shift A,Team 2,No
+EV-0053,2024-09-25 15:55:00,DEL,Scan Failure,Shift C,Team 1,Yes
+EV-0054,2025-01-25 10:05:00,BLR,Label Print Error,Shift C,Team 1,Yes
+EV-0055,2025-01-09 18:44:00,DEL,WMS Timeout,Shift A,Team 2,Yes
+EV-0056,2025-02-23 15:16:00,BLR,Scan Failure,Shift C,Team 2,Yes
+EV-0057,2024-11-27 11:17:00,DEL,RF Gun Disconnected,Shift C,Team 1,Yes
+EV-0058,2025-01-16 20:33:00,DEL,Scan Failure,Shift B,Team 1,Yes
+EV-0059,2024-10-30 11:25:00,DEL,Scan Failure,Shift A,Team 1,No
+EV-0060,2024-10-09 12:30:00,DEL,Conveyor Jam,Shift C,Team 2,No
+EV-0061,2024-09-03 10:28:00,BLR,RF Gun Disconnected,Shift B,Team 2,Yes
+EV-0062,2024-09-26 12:53:00,BLR,RF Gun Disconnected,Shift C,Team 2,No
+EV-0063,2024-10-06 07:12:00,DEL,Pick Path Error,Shift B,Team 1,No
+EV-0064,2024-12-16 08:54:00,BLR,WMS Timeout,Shift C,Team 2,Yes
+EV-0065,2024-11-14 16:13:00,MUM,WMS Timeout,Shift B,Team 1,No
+EV-0066,2025-02-22 14:52:00,BLR,Label Print Error,Shift A,Team 1,No
+EV-0067,2024-10-14 19:23:00,BLR,WMS Timeout,Shift A,Team 3,No
+EV-0068,2025-02-14 16:18:00,MUM,WMS Timeout,Shift C,Team 1,Yes
+EV-0069,2024-10-24 07:25:00,DEL,Label Print Error,Shift A,Team 3,Yes
+EV-0070,2024-12-09 06:06:00,MUM,Label Print Error,Shift C,Team 2,Yes
+EV-0071,2025-01-10 18:00:00,DEL,Label Print Error,Shift C,Team 2,Yes
+EV-0072,2025-02-03 06:32:00,MUM,Pick Path Error,Shift B,Team 2,No
+EV-0073,2024-09-21 16:05:00,MUM,Label Print Error,Shift B,Team 3,No
+EV-0074,2024-10-27 19:43:00,DEL,Label Print Error,Shift A,Team 1,No
+EV-0075,2025-02-24 07:24:00,MUM,Label Print Error,Shift B,Team 2,Yes
+EV-0076,2024-10-07 14:17:00,MUM,Conveyor Jam,Shift B,Team 1,Yes
+EV-0077,2024-09-01 14:40:00,MUM,WMS Timeout,Shift C,Team 2,Yes
+EV-0078,2024-10-12 20:36:00,MUM,Scan Failure,Shift A,Team 3,Yes
+EV-0079,2025-01-09 10:33:00,MUM,Scan Failure,Shift A,Team 2,No
+EV-0080,2024-12-16 17:02:00,BLR,Pick Path Error,Shift A,Team 1,Yes
+EV-0081,2024-09-02 10:26:00,BLR,Scan Failure,Shift C,Team 1,Yes
+EV-0082,2024-11-07 15:42:00,MUM,Label Print Error,Shift C,Team 3,No
+EV-0083,2024-09-28 20:52:00,BLR,WMS Timeout,Shift A,Team 2,Yes
+EV-0084,2024-09-19 06:26:00,MUM,Pick Path Error,Shift B,Team 3,No
+EV-0085,2024-11-13 11:30:00,DEL,Label Print Error,Shift A,Team 2,Yes
+EV-0086,2024-09-15 19:11:00,BLR,Conveyor Jam,Shift A,Team 1,No
+EV-0087,2025-01-25 09:22:00,MUM,Pick Path Error,Shift B,Team 1,Yes
+EV-0088,2024-09-20 18:04:00,BLR,Scan Failure,Shift C,Team 2,Yes
+EV-0089,2025-02-05 14:23:00,DEL,Label Print Error,Shift A,Team 3,No
+EV-0090,2024-09-07 11:40:00,BLR,Scan Failure,Shift B,Team 2,Yes
+EV-0091,2024-09-25 10:34:00,MUM,Label Print Error,Shift A,Team 3,Yes
+EV-0092,2024-10-02 13:48:00,DEL,Conveyor Jam,Shift B,Team 3,Yes
+EV-0093,2024-12-01 10:47:00,DEL,Label Print Error,Shift C,Team 3,No
+EV-0094,2024-10-13 10:48:00,BLR,Label Print Error,Shift A,Team 1,Yes
+EV-0095,2025-01-08 16:57:00,BLR,Scan Failure,Shift B,Team 3,Yes
+EV-0096,2024-09-13 14:37:00,BLR,Conveyor Jam,Shift A,Team 1,Yes
+EV-0097,2024-12-10 14:00:00,DEL,Label Print Error,Shift B,Team 3,Yes
+EV-0098,2024-10-13 11:02:00,MUM,Scan Failure,Shift B,Team 3,Yes
+EV-0099,2024-10-05 10:47:00,BLR,Scan Failure,Shift A,Team 3,Yes
+EV-0100,2024-11-01 06:15:00,BLR,Label Print Error,Shift B,Team 1,No
+EV-0101,2024-10-14 13:16:00,BLR,WMS Timeout,Shift A,Team 1,No
+EV-0102,2024-10-29 14:18:00,MUM,Scan Failure,Shift C,Team 1,Yes
+EV-0103,2025-02-12 12:22:00,MUM,Label Print Error,Shift C,Team 3,No
+EV-0104,2024-11-08 08:53:00,BLR,RF Gun Disconnected,Shift B,Team 3,No
+EV-0105,2024-09-05 09:14:00,DEL,RF Gun Disconnected,Shift B,Team 3,Yes
+EV-0106,2024-09-25 10:35:00,MUM,Pick Path Error,Shift A,Team 1,No
+EV-0107,2025-02-14 06:32:00,MUM,Scan Failure,Shift B,Team 1,Yes
+EV-0108,2025-02-19 14:54:00,MUM,Pick Path Error,Shift A,Team 2,No
+EV-0109,2024-09-08 19:20:00,DEL,RF Gun Disconnected,Shift A,Team 1,Yes
+EV-0110,2025-01-03 08:06:00,DEL,RF Gun Disconnected,Shift A,Team 2,Yes
+EV-0111,2024-11-13 10:30:00,BLR,Pick Path Error,Shift A,Team 3,Yes
+EV-0112,2025-02-25 07:30:00,DEL,WMS Timeout,Shift B,Team 3,Yes
+EV-0113,2024-09-08 09:45:00,MUM,Conveyor Jam,Shift B,Team 3,No
+EV-0114,2025-01-08 17:17:00,BLR,WMS Timeout,Shift B,Team 3,Yes
+EV-0115,2024-10-24 13:18:00,MUM,RF Gun Disconnected,Shift B,Team 2,Yes
+EV-0116,2024-09-02 13:08:00,DEL,WMS Timeout,Shift B,Team 3,Yes
+EV-0117,2024-11-14 19:56:00,MUM,Conveyor Jam,Shift A,Team 1,Yes
+EV-0118,2025-01-21 07:34:00,DEL,Label Print Error,Shift B,Team 3,No
+EV-0119,2024-10-24 14:40:00,DEL,Conveyor Jam,Shift A,Team 3,No
+EV-0120,2025-01-28 16:18:00,DEL,Conveyor Jam,Shift A,Team 3,Yes

@@ -1,0 +1,181 @@
+error_id,timestamp,warehouse,error_type,source,severity,resolved
+IE-0001,2025-02-28 11:14:00,MUM,Weight Mismatch,WMS,Medium,No
+IE-0002,2025-02-16 08:20:00,DEL,Carrier Code Not Found,WMS,Low,Yes
+IE-0003,2025-02-10 15:41:00,BLR,Missing PO Reference,TMS,High,No
+IE-0004,2024-10-31 11:45:00,BLR,Weight Mismatch,WMS,Medium,Yes
+IE-0005,2025-02-06 15:56:00,DEL,Missing PO Reference,TMS,High,No
+IE-0006,2025-02-23 16:01:00,DEL,Carrier Code Not Found,TMS,Low,Yes
+IE-0007,2025-01-26 14:25:00,BLR,Weight Mismatch,WMS,High,Yes
+IE-0008,2024-12-08 10:34:00,MUM,Invalid SKU Code,WMS,High,No
+IE-0009,2024-11-03 15:35:00,DEL,Invalid SKU Code,Carrier API,High,Yes
+IE-0010,2024-10-04 17:15:00,BLR,Duplicate Shipment ID,Carrier API,High,No
+IE-0011,2024-12-13 08:50:00,DEL,Weight Mismatch,WMS,Medium,Yes
+IE-0012,2024-10-31 19:19:00,DEL,Weight Mismatch,WMS,Low,Yes
+IE-0013,2024-12-15 12:12:00,DEL,Invalid SKU Code,ERP,Low,Yes
+IE-0014,2025-02-24 20:08:00,DEL,Invalid SKU Code,Carrier API,High,Yes
+IE-0015,2024-11-05 20:44:00,MUM,Missing PO Reference,Carrier API,Low,No
+IE-0016,2024-10-14 18:55:00,BLR,Quantity Overflow,Carrier API,Low,Yes
+IE-0017,2024-10-20 11:29:00,DEL,Invalid SKU Code,TMS,Medium,Yes
+IE-0018,2024-12-02 18:45:00,DEL,Carrier Code Not Found,TMS,Low,Yes
+IE-0019,2024-11-14 20:09:00,DEL,Duplicate Shipment ID,ERP,Medium,Yes
+IE-0020,2024-11-07 20:36:00,MUM,Invalid SKU Code,TMS,Medium,Yes
+IE-0021,2024-10-13 18:52:00,DEL,Carrier Code Not Found,TMS,Low,Yes
+IE-0022,2024-12-06 09:32:00,DEL,Invalid SKU Code,ERP,Low,Yes
+IE-0023,2024-10-02 20:26:00,MUM,Weight Mismatch,WMS,Medium,No
+IE-0024,2024-11-13 08:37:00,BLR,Quantity Overflow,Carrier API,Low,Yes
+IE-0025,2024-12-22 17:13:00,MUM,Missing PO Reference,Carrier API,Medium,Yes
+IE-0026,2024-12-02 09:54:00,DEL,Duplicate Shipment ID,Carrier API,Medium,Yes
+IE-0027,2024-11-06 11:41:00,DEL,Quantity Overflow,WMS,Medium,No
+IE-0028,2025-01-24 08:58:00,BLR,Missing PO Reference,ERP,Medium,No
+IE-0029,2025-01-21 08:16:00,MUM,Carrier Code Not Found,WMS,Low,Yes
+IE-0030,2025-01-07 07:08:00,MUM,Weight Mismatch,TMS,Low,No
+IE-0031,2025-01-15 16:43:00,MUM,Missing PO Reference,TMS,Low,Yes
+IE-0032,2025-02-10 07:58:00,MUM,Carrier Code Not Found,Carrier API,Low,No
+IE-0033,2024-12-17 17:47:00,BLR,Weight Mismatch,ERP,High,Yes
+IE-0034,2024-12-06 18:55:00,BLR,Carrier Code Not Found,Carrier API,Low,No
+IE-0035,2024-11-19 15:06:00,DEL,Duplicate Shipment ID,Carrier API,High,Yes
+IE-0036,2024-12-08 11:00:00,MUM,Duplicate Shipment ID,TMS,Medium,Yes
+IE-0037,2024-11-29 15:00:00,DEL,Duplicate Shipment ID,WMS,Medium,Yes
+IE-0038,2024-10-06 17:12:00,DEL,Weight Mismatch,ERP,Low,Yes
+IE-0039,2024-09-14 08:58:00,MUM,Missing PO Reference,Carrier API,High,Yes
+IE-0040,2025-02-11 08:07:00,DEL,Duplicate Shipment ID,Carrier API,Low,Yes
+IE-0041,2025-02-27 15:35:00,MUM,Missing PO Reference,TMS,Low,No
+IE-0042,2025-02-06 12:48:00,MUM,Quantity Overflow,Carrier API,High,Yes
+IE-0043,2024-10-12 06:59:00,DEL,Carrier Code Not Found,ERP,Medium,Yes
+IE-0044,2024-11-11 19:17:00,DEL,Invalid SKU Code,Carrier API,Low,No
+IE-0045,2024-10-28 19:31:00,DEL,Missing PO Reference,Carrier API,Low,Yes
+IE-0046,2025-01-27 11:10:00,BLR,Carrier Code Not Found,TMS,High,Yes
+IE-0047,2024-12-26 11:42:00,MUM,Carrier Code Not Found,Carrier API,Low,No
+IE-0048,2025-02-27 18:38:00,BLR,Missing PO Reference,WMS,Low,Yes
+IE-0049,2024-11-20 13:30:00,BLR,Weight Mismatch,WMS,Medium,No
+IE-0050,2024-12-21 06:30:00,MUM,Carrier Code Not Found,ERP,Low,Yes
+IE-0051,2025-01-29 09:38:00,MUM,Carrier Code Not Found,ERP,Medium,Yes
+IE-0052,2024-11-11 19:54:00,DEL,Quantity Overflow,ERP,Low,Yes
+IE-0053,2024-12-21 17:01:00,DEL,Quantity Overflow,TMS,High,No
+IE-0054,2025-02-06 16:24:00,MUM,Carrier Code Not Found,ERP,High,No
+IE-0055,2024-10-25 11:19:00,BLR,Weight Mismatch,Carrier API,Low,No
+IE-0056,2024-11-23 19:05:00,DEL,Duplicate Shipment ID,ERP,Low,Yes
+IE-0057,2024-10-04 12:10:00,BLR,Missing PO Reference,Carrier API,Medium,Yes
+IE-0058,2024-09-27 14:01:00,DEL,Invalid SKU Code,TMS,High,Yes
+IE-0059,2024-09-16 14:22:00,BLR,Carrier Code Not Found,WMS,Medium,No
+IE-0060,2024-12-05 09:21:00,DEL,Invalid SKU Code,WMS,Medium,No
+IE-0061,2025-01-30 11:02:00,MUM,Carrier Code Not Found,Carrier API,High,Yes
+IE-0062,2024-11-22 13:57:00,DEL,Weight Mismatch,TMS,High,Yes
+IE-0063,2024-10-10 11:04:00,DEL,Missing PO Reference,TMS,High,Yes
+IE-0064,2024-12-17 13:50:00,BLR,Carrier Code Not Found,ERP,Low,No
+IE-0065,2024-11-23 18:10:00,DEL,Weight Mismatch,WMS,High,Yes
+IE-0066,2025-01-23 16:48:00,MUM,Invalid SKU Code,WMS,Low,No
+IE-0067,2025-01-06 10:43:00,BLR,Quantity Overflow,ERP,Low,Yes
+IE-0068,2024-10-28 16:33:00,MUM,Invalid SKU Code,ERP,Medium,Yes
+IE-0069,2024-09-16 14:16:00,DEL,Invalid SKU Code,ERP,Low,Yes
+IE-0070,2024-10-07 12:36:00,BLR,Invalid SKU Code,Carrier API,Medium,Yes
+IE-0071,2025-02-25 14:21:00,DEL,Carrier Code Not Found,WMS,High,No
+IE-0072,2024-12-06 17:15:00,MUM,Missing PO Reference,TMS,Medium,Yes
+IE-0073,2024-11-19 08:46:00,MUM,Carrier Code Not Found,WMS,Low,Yes
+IE-0074,2024-09-16 14:22:00,DEL,Duplicate Shipment ID,Carrier API,Low,Yes
+IE-0075,2024-11-07 20:26:00,DEL,Duplicate Shipment ID,Carrier API,High,No
+IE-0076,2024-10-19 13:09:00,BLR,Missing PO Reference,Carrier API,Medium,Yes
+IE-0077,2025-02-16 09:44:00,BLR,Duplicate Shipment ID,TMS,Low,Yes
+IE-0078,2025-01-02 07:51:00,MUM,Duplicate Shipment ID,WMS,Low,Yes
+IE-0079,2024-09-16 14:52:00,MUM,Invalid SKU Code,TMS,Low,Yes
+IE-0080,2024-11-03 12:41:00,MUM,Duplicate Shipment ID,WMS,High,Yes
+IE-0081,2025-02-09 15:58:00,DEL,Duplicate Shipment ID,WMS,Medium,Yes
+IE-0082,2024-10-11 16:58:00,DEL,Duplicate Shipment ID,WMS,Medium,No
+IE-0083,2024-12-15 13:29:00,MUM,Weight Mismatch,WMS,Medium,Yes
+IE-0084,2024-12-26 12:19:00,MUM,Invalid SKU Code,TMS,Medium,Yes
+IE-0085,2024-10-24 10:57:00,BLR,Duplicate Shipment ID,TMS,High,Yes
+IE-0086,2024-10-22 11:49:00,BLR,Carrier Code Not Found,ERP,Low,Yes
+IE-0087,2024-10-06 12:39:00,DEL,Quantity Overflow,TMS,Medium,Yes
+IE-0088,2024-10-31 19:03:00,BLR,Quantity Overflow,WMS,Low,Yes
+IE-0089,2024-10-19 16:56:00,DEL,Missing PO Reference,TMS,High,Yes
+IE-0090,2024-11-19 16:33:00,MUM,Invalid SKU Code,ERP,Medium,Yes
+IE-0091,2024-10-07 12:16:00,DEL,Weight Mismatch,WMS,Medium,Yes
+IE-0092,2024-12-08 13:18:00,BLR,Duplicate Shipment ID,TMS,High,Yes
+IE-0093,2024-11-16 10:52:00,BLR,Weight Mismatch,Carrier API,Low,Yes
+IE-0094,2024-12-17 10:35:00,DEL,Carrier Code Not Found,TMS,High,Yes
+IE-0095,2024-12-26 17:56:00,BLR,Weight Mismatch,WMS,Low,Yes
+IE-0096,2025-01-28 10:03:00,MUM,Quantity Overflow,TMS,Medium,Yes
+IE-0097,2024-11-28 08:42:00,DEL,Missing PO Reference,WMS,High,Yes
+IE-0098,2025-01-08 15:13:00,MUM,Weight Mismatch,ERP,Low,Yes
+IE-0099,2025-01-18 08:34:00,MUM,Quantity Overflow,ERP,High,Yes
+IE-0100,2025-02-02 11:05:00,MUM,Carrier Code Not Found,TMS,High,Yes
+IE-0101,2025-02-28 17:37:00,MUM,Invalid SKU Code,Carrier API,High,Yes
+IE-0102,2024-11-16 12:16:00,MUM,Missing PO Reference,WMS,High,Yes
+IE-0103,2024-09-08 10:04:00,MUM,Missing PO Reference,TMS,Low,No
+IE-0104,2025-01-05 14:23:00,MUM,Invalid SKU Code,Carrier API,Low,Yes
+IE-0105,2025-01-07 15:30:00,MUM,Quantity Overflow,TMS,Low,Yes
+IE-0106,2025-02-23 10:24:00,MUM,Duplicate Shipment ID,WMS,Medium,No
+IE-0107,2024-10-07 18:41:00,MUM,Duplicate Shipment ID,WMS,High,Yes
+IE-0108,2024-09-15 18:44:00,MUM,Carrier Code Not Found,ERP,Medium,No
+IE-0109,2024-09-09 19:40:00,MUM,Missing PO Reference,TMS,High,No
+IE-0110,2024-09-11 16:15:00,DEL,Weight Mismatch,ERP,Low,Yes
+IE-0111,2024-09-04 17:31:00,BLR,Quantity Overflow,WMS,High,Yes
+IE-0112,2024-12-08 20:17:00,MUM,Weight Mismatch,TMS,Low,No
+IE-0113,2024-11-28 10:41:00,DEL,Carrier Code Not Found,WMS,Low,No
+IE-0114,2025-01-04 16:57:00,BLR,Invalid SKU Code,ERP,Medium,Yes
+IE-0115,2024-12-18 20:56:00,MUM,Quantity Overflow,ERP,Medium,Yes
+IE-0116,2024-12-29 07:44:00,MUM,Invalid SKU Code,Carrier API,High,No
+IE-0117,2024-09-21 19:26:00,MUM,Quantity Overflow,TMS,Low,Yes
+IE-0118,2024-12-17 20:47:00,DEL,Weight Mismatch,TMS,Medium,Yes
+IE-0119,2024-11-27 15:56:00,MUM,Invalid SKU Code,ERP,High,No
+IE-0120,2024-09-30 19:58:00,DEL,Missing PO Reference,WMS,High,Yes
+IE-0121,2024-12-16 09:11:00,DEL,Invalid SKU Code,TMS,Low,Yes
+IE-0122,2024-12-05 12:38:00,MUM,Duplicate Shipment ID,WMS,Low,Yes
+IE-0123,2025-02-12 17:27:00,BLR,Weight Mismatch,TMS,High,No
+IE-0124,2025-01-27 13:35:00,MUM,Quantity Overflow,Carrier API,High,No
+IE-0125,2024-10-21 07:36:00,MUM,Missing PO Reference,ERP,Medium,Yes
+IE-0126,2025-01-05 16:03:00,MUM,Carrier Code Not Found,WMS,Medium,Yes
+IE-0127,2024-10-17 18:22:00,BLR,Carrier Code Not Found,ERP,Medium,Yes
+IE-0128,2024-10-05 09:00:00,DEL,Missing PO Reference,Carrier API,Medium,No
+IE-0129,2025-01-29 20:45:00,DEL,Duplicate Shipment ID,Carrier API,Medium,Yes
+IE-0130,2024-09-28 18:38:00,DEL,Quantity Overflow,Carrier API,Low,No
+IE-0131,2025-02-22 16:01:00,BLR,Invalid SKU Code,TMS,Low,No
+IE-0132,2024-09-02 12:50:00,DEL,Missing PO Reference,WMS,Low,No
+IE-0133,2024-10-19 11:26:00,MUM,Missing PO Reference,TMS,Medium,No
+IE-0134,2024-12-05 12:39:00,BLR,Invalid SKU Code,WMS,High,Yes
+IE-0135,2024-09-17 06:51:00,MUM,Duplicate Shipment ID,ERP,Low,Yes
+IE-0136,2024-12-30 09:01:00,DEL,Missing PO Reference,TMS,High,Yes
+IE-0137,2024-12-23 10:55:00,BLR,Weight Mismatch,WMS,High,Yes
+IE-0138,2024-10-03 16:46:00,DEL,Invalid SKU Code,Carrier API,Low,Yes
+IE-0139,2025-01-21 14:44:00,DEL,Duplicate Shipment ID,WMS,High,Yes
+IE-0140,2025-02-23 19:27:00,BLR,Carrier Code Not Found,TMS,High,No
+IE-0141,2024-10-06 16:04:00,BLR,Invalid SKU Code,WMS,High,Yes
+IE-0142,2024-09-27 07:41:00,DEL,Quantity Overflow,ERP,Medium,No
+IE-0143,2025-02-02 06:51:00,DEL,Carrier Code Not Found,Carrier API,Medium,No
+IE-0144,2024-12-10 09:25:00,BLR,Carrier Code Not Found,TMS,Medium,Yes
+IE-0145,2025-01-08 07:41:00,DEL,Missing PO Reference,Carrier API,Medium,Yes
+IE-0146,2024-11-26 06:12:00,DEL,Carrier Code Not Found,Carrier API,High,Yes
+IE-0147,2024-10-15 16:42:00,BLR,Invalid SKU Code,ERP,Low,No
+IE-0148,2024-12-02 09:22:00,BLR,Carrier Code Not Found,WMS,High,Yes
+IE-0149,2025-02-16 09:09:00,BLR,Invalid SKU Code,TMS,Low,No
+IE-0150,2025-02-24 11:26:00,MUM,Duplicate Shipment ID,TMS,Low,Yes
+IE-0151,2024-09-14 11:25:00,BLR,Weight Mismatch,ERP,Medium,Yes
+IE-0152,2024-10-03 17:54:00,MUM,Invalid SKU Code,WMS,Medium,Yes
+IE-0153,2025-01-17 15:04:00,BLR,Invalid SKU Code,WMS,High,Yes
+IE-0154,2025-01-08 14:57:00,DEL,Duplicate Shipment ID,ERP,Medium,Yes
+IE-0155,2024-11-10 15:29:00,MUM,Weight Mismatch,Carrier API,Medium,Yes
+IE-0156,2024-11-02 12:46:00,DEL,Weight Mismatch,TMS,Medium,No
+IE-0157,2024-11-28 08:32:00,DEL,Missing PO Reference,Carrier API,Low,Yes
+IE-0158,2025-02-16 10:45:00,BLR,Carrier Code Not Found,ERP,Low,Yes
+IE-0159,2025-01-22 19:16:00,BLR,Invalid SKU Code,WMS,High,Yes
+IE-0160,2024-11-21 13:30:00,MUM,Weight Mismatch,ERP,High,Yes
+IE-0161,2025-01-17 14:54:00,MUM,Invalid SKU Code,TMS,Low,Yes
+IE-0162,2025-01-28 19:05:00,BLR,Invalid SKU Code,TMS,High,No
+IE-0163,2024-12-23 14:12:00,DEL,Missing PO Reference,TMS,High,Yes
+IE-0164,2024-12-08 18:00:00,DEL,Quantity Overflow,TMS,Low,Yes
+IE-0165,2025-02-11 13:01:00,MUM,Weight Mismatch,ERP,High,Yes
+IE-0166,2025-02-19 09:26:00,DEL,Carrier Code Not Found,Carrier API,High,Yes
+IE-0167,2024-12-22 08:00:00,BLR,Missing PO Reference,ERP,Low,Yes
+IE-0168,2025-01-19 14:06:00,DEL,Missing PO Reference,ERP,High,No
+IE-0169,2024-12-11 19:30:00,MUM,Missing PO Reference,Carrier API,Low,Yes
+IE-0170,2024-10-22 16:28:00,DEL,Invalid SKU Code,TMS,High,Yes
+IE-0171,2024-12-06 11:26:00,MUM,Duplicate Shipment ID,Carrier API,High,Yes
+IE-0172,2025-01-27 16:44:00,DEL,Invalid SKU Code,Carrier API,High,Yes
+IE-0173,2025-01-04 18:18:00,DEL,Quantity Overflow,Carrier API,Medium,No
+IE-0174,2024-09-09 11:16:00,MUM,Weight Mismatch,WMS,High,Yes
+IE-0175,2024-09-20 12:16:00,BLR,Quantity Overflow,ERP,High,Yes
+IE-0176,2024-11-09 12:57:00,BLR,Carrier Code Not Found,Carrier API,High,Yes
+IE-0177,2025-02-17 06:48:00,MUM,Quantity Overflow,Carrier API,High,Yes
+IE-0178,2024-09-15 19:10:00,MUM,Missing PO Reference,ERP,Low,Yes
+IE-0179,2024-12-18 19:56:00,MUM,Missing PO Reference,TMS,Medium,No
+IE-0180,2025-01-09 20:03:00,BLR,Duplicate Shipment ID,TMS,High,Yes
