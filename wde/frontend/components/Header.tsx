@@ -15,13 +15,7 @@ const ROUTE_LABELS: Record<string, string> = {
   "/kpi-fulfillment-accuracy": "Fulfillment Accuracy",
   "/kpi-order-cycle-efficiency": "Order Cycle Efficiency",
   "/kpi-dispatch-backlog": "Dispatch Backlog",
-  "/inbound": "Inbound",
-  "/suppliers": "Suppliers",
   "/yard": "Yard",
-  "/outbound": "Outbound",
-  "/drift": "Drift Monitor",
-  "/system-health": "System Health",
-  "/copilot": "Copilot",
 };
 
 export default function Header({

@@ -28,13 +28,11 @@ const FALLBACK: Payload = {
   score: 64,
   band: "high",
   label: "High Disruption Risk",
-  signal_count: 6,
+  signal_count: 3,
   factors: [
-    { severity: "high",     text: "On-Time Dispatch at 88.6% — below 92% SLA target" },
-    { severity: "high",     text: "Supplier cluster volatile: SUP-113, SUP-204 flagged by AI" },
-    { severity: "critical", text: "Operational drift confirmed: supplier_cluster, dispatch_latency" },
-    { severity: "watch",    text: "Dock-to-Stock at 2.8h — marginally above 2.5h target" },
-    { severity: "watch",    text: "Inbound scanner flagged 2 anomalous receipt(s)" },
+    { severity: "high",  text: "On-Time Dispatch below SLA target — upload operational data to compute live score" },
+    { severity: "watch", text: "Dock-to-Stock time elevated — upload inbound receipts for detailed breakdown" },
+    { severity: "watch", text: "Connect backend to see real-time disruption signals across warehouse" },
   ],
 };
 

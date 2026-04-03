@@ -81,7 +81,7 @@ export default function ExceptionActionPanel({
         },
         { timeout: 15000 }
       );
-      setExecutionMsg(`Execution queued: ${data.run_id}`);
+      setExecutionMsg(`Action logged for ops review · Ref: ${data.run_id}`);
     } catch (e: any) {
       setExecutionMsg(e?.response?.data?.detail || "Action execution failed.");
     } finally {
@@ -93,11 +93,12 @@ export default function ExceptionActionPanel({
     <section className="control-card p-4">
       <div className="mb-3 flex items-center justify-between gap-2">
         <div>
-          <p className="text-xs uppercase tracking-wide text-slate-400">Agentic Ops</p>
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Exception-to-Action Agent</h3>
+          <p className="text-xs uppercase tracking-wide text-slate-400">Operations Exceptions</p>
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">KPI Exception Monitor</h3>
+          <p className="mt-0.5 text-xs text-slate-400">Auto-detects KPI breaches and surfaces standard corrective actions</p>
         </div>
         <button onClick={refreshPlan} className="rounded-lg border border-slate-300 px-2 py-1 text-xs text-slate-700">
-          Refresh Plan
+          Refresh
         </button>
       </div>
 
@@ -114,7 +115,7 @@ export default function ExceptionActionPanel({
               Highest Severity: {plan.summary.highest_severity}
             </span>
             <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-slate-700">
-              Plan ID: {plan.plan_id}
+              Snapshot: {plan.plan_id}
             </span>
           </div>
 
@@ -130,7 +131,7 @@ export default function ExceptionActionPanel({
                 </span>
               </div>
               <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
-                Threshold: {item.threshold} | {item.reason}
+                Target: {item.threshold} &nbsp;·&nbsp; {item.reason}
               </p>
 
               <div className="mt-2 space-y-2">
@@ -139,14 +140,14 @@ export default function ExceptionActionPanel({
                     <p className="text-xs font-semibold text-slate-800 dark:text-slate-100">{action.title}</p>
                     <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">{action.description}</p>
                     <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
-                      ETA: {action.eta_min} min | Impact: {action.impact}
+                      Expected outcome: {action.impact}
                     </p>
                     <button
                       onClick={() => executeActions([action.action_id])}
                       disabled={executingId.length > 0}
                       className="mt-2 rounded-lg bg-brand-primary px-2 py-1 text-xs font-semibold text-white disabled:opacity-60"
                     >
-                      {executingId === action.action_id ? "Executing..." : "Execute Action"}
+                      {executingId === action.action_id ? "Logging..." : "Log Action for Review"}
                     </button>
                   </div>
                 ))}
@@ -157,7 +158,7 @@ export default function ExceptionActionPanel({
                 disabled={executingId.length > 0}
                 className="mt-3 rounded-lg border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-700 disabled:opacity-60"
               >
-                Execute All for This Exception
+                Log All Actions for This Exception
               </button>
             </div>
           ))}

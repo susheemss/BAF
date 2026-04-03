@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import agent, ai, copilot, data_ingest, kpis
+from routers import agent, ai, data_ingest, kpis
 
 load_dotenv()
 
@@ -24,6 +24,5 @@ def health() -> dict[str, str]:
 
 app.include_router(kpis.router, prefix="/api/kpis", tags=["kpis"])
 app.include_router(ai.router, prefix="/api/ai", tags=["ai"])
-app.include_router(copilot.router, prefix="/api/copilot", tags=["copilot"])
 app.include_router(agent.router, prefix="/api/agent", tags=["agent"])
 app.include_router(data_ingest.router, prefix="/api/data", tags=["data"])

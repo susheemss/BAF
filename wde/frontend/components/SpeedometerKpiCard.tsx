@@ -5,6 +5,7 @@ type Props = {
   value: number | string;
   unit: string;
   maxValue?: number;
+  onClick?: () => void;
 };
 
 function toNumber(v: number | string): number | null {
@@ -45,7 +46,7 @@ function getThresholdProfile(title: string, unit: string, fallbackMax?: number):
   return { lower: 0.6, upper: 0.85, higherIsBetter: true, scaleMax: fallbackMax };
 }
 
-export default function SpeedometerKpiCard({ title, value, unit, maxValue }: Props) {
+export default function SpeedometerKpiCard({ title, value, unit, maxValue, onClick }: Props) {
   const numeric = toNumber(value);
   const profile = getThresholdProfile(title, unit, maxValue);
   const resolvedScaleMax =
@@ -90,8 +91,19 @@ export default function SpeedometerKpiCard({ title, value, unit, maxValue }: Pro
   const needleY = cy - r * Math.sin(angle);
 
   return (
-    <div className="rounded-xl border border-slate-200 p-4 dark:border-slate-700">
-      <p className="text-sm text-slate-500 dark:text-slate-400">{title}</p>
+    <div
+      className={`rounded-xl border border-slate-200 p-4 dark:border-slate-700 ${onClick ? "cursor-pointer transition-shadow hover:shadow-md hover:border-brand-primary" : ""}`}
+      onClick={onClick}
+      title={onClick ? `Click to drill down into ${title}` : undefined}
+    >
+      <div className="flex items-start justify-between gap-1">
+        <p className="text-sm text-slate-500 dark:text-slate-400">{title}</p>
+        {onClick && (
+          <span className="shrink-0 rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-400 dark:bg-slate-800">
+            drill down ↗
+          </span>
+        )}
+      </div>
 
       <div className="mt-2 grid place-content-center">
         <svg width="180" height="110" viewBox="0 0 180 110" role="img" aria-label={title}>

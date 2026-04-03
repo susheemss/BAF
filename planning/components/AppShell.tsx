@@ -1,5 +1,6 @@
 import Sidebar from "./Sidebar";
 import Header from "./Header";
+import VapiWidget from "./VapiWidget";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
@@ -9,6 +10,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <Header />
         <main className="flex-1 p-6">{children}</main>
       </div>
+      <VapiWidget />
     </div>
   );
 }

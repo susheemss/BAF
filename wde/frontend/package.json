@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.0",
+    "@vapi-ai/web": "^2.5.2",
     "axios": "^1.8.2",
     "framer-motion": "^11.18.2",
     "lucide-react": "^0.511.0",

@@ -244,7 +244,7 @@ def execute_actions(plan_id: str, action_ids: list[str] | None = None, actor: st
         "status": "queued",
         "mode": "demo",
         "actions": selected,
-        "message": "Execution queued in demo mode. Hook this to WMS orchestration APIs for live automation.",
+        "message": "Action logged for operations review. Connect to your WMS orchestration system to enable live execution.",
     }
     EXECUTION_STORE.append(execution)
     return execution

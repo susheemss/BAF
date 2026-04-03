@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import FilterBar, { FilterConfig } from "@/components/FilterBar";
-import FloatingCopilot from "@/components/FloatingCopilot";
+import VapiWidget from "@/components/VapiWidget";
 
 const defaultFilters: FilterConfig[] = [
   { id: "timeframe", label: "Timeframe", options: ["Today", "Last 7 Days", "Last 30 Days"], defaultValue: "Today" },
@@ -60,8 +60,8 @@ export default function ProtectedLayout({
           <FilterBar filters={filters} viewLabel={viewLabel} />
         </Suspense>
         <main className="p-6">{children}</main>
-        <FloatingCopilot />
       </div>
+      <VapiWidget />
     </div>
   );
 }

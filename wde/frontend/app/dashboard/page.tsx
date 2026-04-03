@@ -3,17 +3,20 @@
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
+import {
+  ComposedChart, Line, Area, XAxis, YAxis, CartesianGrid,
+  Tooltip, ReferenceLine, ResponsiveContainer,
+} from "recharts";
 import ProtectedLayout from "@/components/ProtectedLayout";
 import KPIWidget from "@/components/KPIWidget";
-import OpsQueueTable from "@/components/OpsQueueTable";
-import LineChartCard from "@/components/LineChartCard";
-import DonutChartCard from "@/components/DonutChartCard";
-import AlertCard from "@/components/AlertCard";
 import ExceptionActionPanel from "@/components/ExceptionActionPanel";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import DisruptionRiskBanner from "@/components/DisruptionRiskBanner";
 import type { FilterConfig } from "@/components/FilterBar";
 import { apiClient } from "@/lib/apiClient";
+
+type TrendPoint = { date: string; value: number; total: number };
+type TrendData  = { points: TrendPoint[]; target: number; has_data: boolean };
 
 type KpiTabItem = { kpi: string; value: number | string; unit: string };
 type RiskTone = "normal" | "watch" | "high" | "critical";
@@ -65,6 +68,7 @@ function DashboardPageContent() {
   const searchParams = useSearchParams();
   const queryKey = searchParams.toString();
   const [kpis, setKpis] = useState<KpiPayload>(fallback);
+  const [trend, setTrend] = useState<TrendData>({ points: [], target: 92, has_data: false });
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState("Live KPI sync pending...");
   const filterParams = useMemo(
@@ -97,26 +101,16 @@ function DashboardPageContent() {
     load();
   }, [filterParams, queryKey]);
 
+  useEffect(() => {
+    apiClient
+      .get("/api/kpis/trend", { params: { warehouse: filterParams.warehouse } })
+      .then(({ data }) => setTrend(data))
+      .catch(() => {});
+  }, [filterParams.warehouse]);
+
   const uploadedCount = kpis.data_coverage?.uploaded_count ?? 0;
   const missingCount = kpis.data_coverage?.missing?.length ?? 0;
   const errors = (kpis.error_counts?.integration_errors ?? 0) + (kpis.error_counts?.event_errors ?? 0);
-
-  const trendData = [
-    { label: "Mon", inbound: 93, outbound: 88 },
-    { label: "Tue", inbound: 95, outbound: 90 },
-    { label: "Wed", inbound: 90, outbound: 86 },
-    { label: "Thu", inbound: 98, outbound: 92 },
-    { label: "Fri", inbound: 96, outbound: 91 },
-    { label: "Sat", inbound: 89, outbound: 84 },
-    { label: "Sun", inbound: 92, outbound: 87 }
-  ];
-
-  const riskDonut = [
-    { label: "Normal", value: 17, color: "#10b981" },
-    { label: "Watch", value: 8, color: "#F59E0B" },
-    { label: "High", value: 6, color: "#f97316" },
-    { label: "Critical", value: 3, color: "#EF4444" }
-  ];
 
   const cards = useMemo(
     () => [
@@ -126,8 +120,7 @@ function DashboardPageContent() {
         suffix: "h",
         trend: "Target <= 2.5h",
         risk: (kpis.dock_to_stock > 3 ? "high" : "watch") as RiskTone,
-        tooltip: "Duration from arrival at receiving dock until put away",
-        sparkline: [2.6, 2.8, 3.1, 2.9, 2.7, 2.8, kpis.dock_to_stock]
+        tooltip: "Duration from arrival at receiving dock until put away"
       },
       {
         title: "Receiving Accuracy",
@@ -135,8 +128,7 @@ function DashboardPageContent() {
         suffix: "%",
         trend: "Expected >= 98%",
         risk: (kpis.receiving_accuracy >= 98 ? "normal" : "watch") as RiskTone,
-        tooltip: "Share of received lines matching expected quantities",
-        sparkline: [95.8, 96.4, 96.7, 97.1, 97.3, 97.4, kpis.receiving_accuracy]
+        tooltip: "Share of received lines matching expected quantities"
       },
       {
         title: "On-Time Dispatch",
@@ -144,16 +136,14 @@ function DashboardPageContent() {
         suffix: "%",
         trend: "Expected >= 92%",
         risk: (kpis.on_time_dispatch >= 92 ? "normal" : "high") as RiskTone,
-        tooltip: "Orders dispatched on or before planned ship date",
-        sparkline: [89.2, 90.1, 89.6, 88.9, 89.4, 88.8, kpis.on_time_dispatch]
+        tooltip: "Orders dispatched on or before planned ship date"
       },
       {
         title: "Order Pendency",
         value: kpis.order_pendency,
         trend: "Delayed shipment count",
         risk: (kpis.order_pendency > 100 ? "critical" : "watch") as RiskTone,
-        tooltip: "Orders delayed beyond expected ship date",
-        sparkline: [108, 112, 116, 119, 121, 124, kpis.order_pendency]
+        tooltip: "Orders delayed beyond expected ship date"
       }
     ],
     [kpis]
@@ -187,40 +177,77 @@ function DashboardPageContent() {
             ))}
           </section>
 
-          <section className="mt-6 grid gap-4 xl:grid-cols-3">
-            <div className="xl:col-span-2">
-              <LineChartCard
-                title="Inbound vs Outbound Reliability"
-                data={trendData}
-                lines={[
-                  { key: "inbound", color: "#00B3A4", name: "Inbound" },
-                  { key: "outbound", color: "#0B1F3B", name: "Outbound" }
-                ]}
-              />
+          <section className="mt-6">
+            <div className="control-card p-4">
+              <p className="mb-1 text-xs uppercase tracking-wide text-slate-400">
+                On-Time Dispatch Trend — Last 30 Days
+              </p>
+              {!trend.has_data ? (
+                <div className="flex h-52 items-center justify-center rounded-xl border border-dashed border-slate-700 text-sm text-slate-500">
+                  Upload shipment lifecycle data to see dispatch trend
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height={220}>
+                  <ComposedChart data={trend.points} margin={{ top: 8, right: 12, left: -10, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="otdGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.25} />
+                        <stop offset="95%" stopColor="#10b981" stopOpacity={0.02} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                    <XAxis
+                      dataKey="date"
+                      tick={{ fontSize: 10, fill: "#64748b" }}
+                      tickFormatter={(v: string) => {
+                        const d = new Date(v);
+                        return `${d.getDate()} ${d.toLocaleString("default", { month: "short" })}`;
+                      }}
+                      interval="preserveStartEnd"
+                    />
+                    <YAxis
+                      domain={[70, 100]}
+                      tick={{ fontSize: 10, fill: "#64748b" }}
+                      tickFormatter={(v: number) => `${v}%`}
+                    />
+                    <Tooltip
+                      contentStyle={{ background: "#0f172a", border: "1px solid #1e293b", borderRadius: 8, fontSize: 12 }}
+                      labelFormatter={(v: string) => new Date(v).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+                      formatter={(v: number) => [`${v}%`, "On-Time Dispatch"]}
+                    />
+                    <ReferenceLine
+                      y={trend.target}
+                      stroke="#f59e0b"
+                      strokeDasharray="5 3"
+                      label={{ value: `SLA ${trend.target}%`, position: "insideTopRight", fill: "#f59e0b", fontSize: 10 }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="value"
+                      stroke="#10b981"
+                      strokeWidth={2}
+                      fill="url(#otdGradient)"
+                      dot={false}
+                      activeDot={{ r: 4, fill: "#10b981" }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="value"
+                      stroke="#10b981"
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              )}
             </div>
-            <DonutChartCard title="Risk Distribution" data={riskDonut} />
           </section>
 
           <section className="mt-6">
-            <OpsQueueTable />
-          </section>
-
-          <section className="mt-6 space-y-3">
-            <p className="text-xs uppercase tracking-wide text-slate-400">Critical Alerts</p>
-            <AlertCard
-              title="Supplier Cluster Drift"
-              summary="SUP-113 moved from stable to volatile in the last 24h"
-              detail="Review supplier slotting and dock assignment for SUP-113 and SUP-204. Volatility signal crossed cluster confidence threshold."
-              tone="high"
-            />
-            <AlertCard
-              title="Yard Congestion Pattern Shift"
-              summary="Average trailer wait increased 22% after 14:00 shift window"
-              detail="Dispatch sequence and gate utilization indicate elevated congestion between 14:00-18:00. Consider pre-allocation and door balancing."
-              tone="critical"
-            />
-          </section>
-          <section className="mt-6">
+            <div className="mb-2 px-1">
+              <h2 className="text-base font-semibold text-slate-800 dark:text-slate-100">Operations Exceptions</h2>
+              <p className="text-xs text-slate-500">KPIs currently outside target thresholds, with recommended corrective actions</p>
+            </div>
             <ExceptionActionPanel params={filterParams} />
           </section>
 

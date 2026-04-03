@@ -42,7 +42,7 @@ export default function HubPage() {
     if (product.external) {
       window.open(product.href, "_blank");
     } else {
-      router.push(product.href);
+      router.push(product.href as "/dashboard");
     }
   };
 

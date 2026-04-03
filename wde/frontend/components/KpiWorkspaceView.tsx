@@ -4,6 +4,7 @@ import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import ProtectedLayout from "@/components/ProtectedLayout";
 import SpeedometerKpiCard from "@/components/SpeedometerKpiCard";
+import DrilldownModal from "@/components/DrilldownModal";
 import type { FilterConfig } from "@/components/FilterBar";
 import { apiClient } from "@/lib/apiClient";
 
@@ -58,6 +59,7 @@ function KpiWorkspaceViewContent({ title, tab, children }: { title: string; tab:
   const queryKey = searchParams.toString();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [drilldown, setDrilldown] = useState<{ data: any; loading: boolean } | null>(null);
   const [payload, setPayload] = useState<KpiPayload>({
     timestamp: undefined,
     kpi_tabs: { [tab]: TAB_FALLBACK[tab] || [] }
@@ -131,6 +133,28 @@ function KpiWorkspaceViewContent({ title, tab, children }: { title: string; tab:
     };
   }, [queryKey, tab]);
 
+  const openDrilldown = async (kpiTitle: string) => {
+    const slug = kpiTitle.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    setDrilldown({ data: null, loading: true });
+    try {
+      const params: Record<string, string> = { kpi: slug };
+      const wh = searchParams.get("warehouse");
+      const tf = searchParams.get("timeframe");
+      const sh = searchParams.get("shift");
+      const df = searchParams.get("date_from");
+      const dt = searchParams.get("date_to");
+      if (wh) params.warehouse = wh;
+      if (tf) params.timeframe = tf;
+      if (sh) params.shift = sh;
+      if (df) params.date_from = df;
+      if (dt) params.date_to = dt;
+      const { data } = await apiClient.get("/api/kpis/drilldown", { params, timeout: 12000 });
+      setDrilldown({ data, loading: false });
+    } catch {
+      setDrilldown({ data: { kpi: kpiTitle, columns: [], rows: [], no_data: true, message: "Failed to load drill-down data." }, loading: false });
+    }
+  };
+
   const rows = payload.kpi_tabs?.[tab] || [];
   const unitMaxMap = useMemo(() => {
     const map: Record<string, number> = {};
@@ -152,6 +176,13 @@ function KpiWorkspaceViewContent({ title, tab, children }: { title: string; tab:
 
   return (
     <ProtectedLayout title={title} filters={filters} viewLabel={`KPI Workspace / ${title}`}>
+      {drilldown && (
+        <DrilldownModal
+          data={drilldown.data}
+          loading={drilldown.loading}
+          onClose={() => setDrilldown(null)}
+        />
+      )}
       <div className="space-y-4">
         {error && (
           <section className="control-card border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-900/20">
@@ -178,6 +209,7 @@ function KpiWorkspaceViewContent({ title, tab, children }: { title: string; tab:
                 value={item.value}
                 unit={item.unit}
                 maxValue={unitMaxMap[item.unit || "unknown"]}
+                onClick={() => openDrilldown(item.kpi)}
               />
             ))}
           </div>

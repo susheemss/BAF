@@ -1,8 +1,12 @@
 /**
  * Data loader for Planning Tool.
- * In production this would call APIs. For now it reads the CSV demo files
- * that live in /public/data/ (copied there from demo_data/).
+ *
+ * DATA_CONNECTED controls whether KPI data is shown across all Planning pages.
+ * Set to true only when a real data source (CSV upload or API) has been wired up.
+ * While false, all Planning screens show empty states instead of hardcoded numbers.
  */
+// Planning CSV is loaded — set to true when planning_demand_supply.csv is in /public/
+export const DATA_CONNECTED = true;
 
 export type PlanningRow = {
   month: string;
@@ -184,47 +188,85 @@ export type CrossAlert = {
   action: string;
 };
 
-export function getCrossAlerts(): CrossAlert[] {
-  return [
-    {
+/**
+ * Derives cross-system alerts dynamically from live KPI values.
+ * Alerts fire only when a KPI breaches its threshold — no hardcoded messages.
+ * Severity escalates based on how far the KPI is from target.
+ */
+export function getCrossAlerts(wms: WmsKpis, tms: TmsKpis, planning: PlanningKpis): CrossAlert[] {
+  const alerts: CrossAlert[] = [];
+
+  // Inbound transit delays threatening stockout
+  if (tms.avgTransitDays > 2.5) {
+    alerts.push({
       id: "CA-001",
-      severity: "critical",
+      severity: tms.avgTransitDays > 3.2 ? "critical" : "high",
       source: ["TMS", "Planning"],
-      message: "Blue Dart delay spike (+2.3 days avg) — 14 inbound shipments to DEL overdue",
-      impact: "8 SKUs projected to breach safety stock within 4 days",
-      action: "Expedite alternate carrier for PO-47821, PO-47834",
-    },
-    {
+      message: `Avg inbound transit at ${tms.avgTransitDays}d (target ≤ 2.5d) — inbound shipments running late`,
+      impact: "Stockout risk elevated for SKUs dependent on delayed inbound lanes",
+      action: "Review carrier performance; prioritise inbound for high-risk SKUs",
+    });
+  }
+
+  // Dock-to-stock elevated — receiving backlog
+  if (wms.dockToStock > 3.0) {
+    alerts.push({
       id: "CA-002",
-      severity: "high",
+      severity: wms.dockToStock > 4.0 ? "critical" : "high",
       source: ["WMS", "Planning"],
-      message: "DEL dock-to-stock at 5.1h (target 3.0h) — receiving backlog building",
-      impact: "Demand plan for Oct-Nov at risk — 5 high-velocity SKUs delayed put-away",
-      action: "Redeploy Team 2 to inbound dock; prioritize SKU-004, SKU-006",
-    },
-    {
+      message: `Dock-to-stock at ${wms.dockToStock}h (target ≤ 3.0h) — receiving backlog building`,
+      impact: "High-velocity SKUs delayed in put-away; available inventory understated",
+      action: "Redeploy inbound receiving resources; prioritise high-velocity SKUs",
+    });
+  }
+
+  // Tender acceptance below threshold
+  if (tms.tenderAcceptance < 90) {
+    alerts.push({
       id: "CA-003",
-      severity: "high",
+      severity: tms.tenderAcceptance < 85 ? "critical" : "high",
       source: ["TMS", "WMS"],
-      message: "Tender rejection rate at 11.2% — above 8% threshold",
-      impact: "Outbound dispatch backlog growing at MUM warehouse",
-      action: "Pre-book Delhivery capacity for next 72 hours",
-    },
-    {
+      message: `Tender acceptance at ${tms.tenderAcceptance}% (target ≥ 90%) — carrier rejections above threshold`,
+      impact: "Outbound dispatch backlog risk increasing; carrier capacity may be insufficient",
+      action: "Pre-book alternate carrier capacity; review tender terms",
+    });
+  }
+
+  // High stockout risk SKUs
+  if (planning.stockoutRiskHigh > 5) {
+    alerts.push({
       id: "CA-004",
+      severity: planning.stockoutRiskHigh > 10 ? "critical" : "medium",
+      source: ["Planning"],
+      message: `${planning.stockoutRiskHigh} SKUs flagged at high stockout risk — days of cover below safety threshold`,
+      impact: "Service level and fill rate at risk; replenishment action required",
+      action: "Raise emergency POs for critical SKUs; review safety stock policy",
+    });
+  }
+
+  // On-time dispatch below watch threshold
+  if (wms.onTimeDispatch < 88) {
+    alerts.push({
+      id: "CA-005",
+      severity: wms.onTimeDispatch < 84 ? "high" : "medium",
+      source: ["WMS", "TMS"],
+      message: `On-time dispatch at ${wms.onTimeDispatch}% (target ≥ 92%) — outbound SLA at risk`,
+      impact: "Pending orders at risk of missing dispatch commitment",
+      action: "Review picking and dispatch scheduling; assess shift capacity",
+    });
+  }
+
+  // Demand variance too high — forecast unreliable
+  if (planning.demandVariancePct > 5) {
+    alerts.push({
+      id: "CA-006",
       severity: "medium",
       source: ["Planning"],
-      message: "14 SKUs at High stockout risk across 3 warehouses",
-      impact: "Estimated ₹18L revenue at risk if not replenished in 7 days",
-      action: "Raise emergency POs for 6 critical SKUs; review safety stock policy",
-    },
-    {
-      id: "CA-005",
-      severity: "medium",
-      source: ["WMS", "TMS"],
-      message: "On-Time Dispatch at 86.2% at DEL — lowest in 3 months",
-      impact: "TMS outbound SLA breach risk for 42 orders",
-      action: "Review picking team allocation for Shift B at DEL",
-    },
-  ];
+      message: `Demand variance at ${planning.demandVariancePct}% (target ≤ 5%) — forecast accuracy degrading`,
+      impact: "Inventory planning unreliable; risk of over/under-stocking",
+      action: "Re-run demand forecast; review sales inputs for next planning cycle",
+    });
+  }
+
+  return alerts;
 }

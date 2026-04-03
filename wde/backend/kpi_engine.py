@@ -547,3 +547,287 @@ def compute_all_kpis(
     }
     _KPI_RESULT_CACHE[cache_key] = (now + KPI_CACHE_TTL_SEC, signature, payload)
     return deepcopy(payload)
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# KPI Drill-Down: top-N rows driving a specific KPI
+# ──────────────────────────────────────────────────────────────────────────────
+
+def _fmt_dt(val) -> str:
+    """Format a pandas Timestamp or NaT to a short string."""
+    try:
+        return str(val)[:16] if pd.notna(val) else ""
+    except Exception:
+        return ""
+
+
+def compute_drilldown(
+    kpi_slug: str,
+    warehouse: str | None = None,
+    timeframe: str | None = None,
+    shift: str | None = None,
+    date_from: str | None = None,
+    date_to: str | None = None,
+    top_n: int = 5,
+) -> dict:
+    """Return the top N data rows driving the given KPI, for drill-down display."""
+    slug = kpi_slug.lower().strip()
+
+    # ── Dock-to-Stock Time ─────────────────────────────────────────────────────
+    if slug in ("dock-to-stock-time", "dock-to-stock"):
+        df = _load_dataset("inbound_receipts")
+        if df is None or df.empty:
+            return {"kpi": kpi_slug, "columns": [], "rows": [], "no_data": True}
+        df, _ = _prepare_dataset(df, warehouse, timeframe, shift,
+                                 ["wh_id", "warehouse", "warehouse_id"],
+                                 ["last_upd_dt", "arrdte"],
+                                 date_from=date_from, date_to=date_to)
+        n = _normalize_columns(df) if df is not None and not df.empty else pd.DataFrame()
+        arr_col = _pick(n, ["arrdte", "arr_date", "arrival_date"])
+        upd_col = _pick(n, ["last_upd_dt", "last_update"])
+        id_col  = _pick(n, ["rcpt_id", "receipt_id", "po_num", "po_number", "trlr_num"])
+        wh_col  = _pick(n, ["wh_id", "warehouse", "warehouse_id"])
+        if n.empty or not arr_col or not upd_col:
+            return {"kpi": kpi_slug, "columns": [], "rows": [], "no_data": True}
+        n["_hrs"] = ((pd.to_datetime(n[upd_col], errors="coerce") -
+                      pd.to_datetime(n[arr_col], errors="coerce"))
+                     .dt.total_seconds() / 3600).round(2)
+        top = n.dropna(subset=["_hrs"]).query("_hrs >= 0").nlargest(top_n, "_hrs")
+        cols = (["Receipt / PO"] if id_col else []) + (["Warehouse"] if wh_col else []) + ["Arrival", "Last Updated", "Hours"]
+        rows = [
+            (([str(r.get(id_col, ""))] if id_col else []) +
+             ([str(r.get(wh_col, ""))] if wh_col else []) +
+             [_fmt_dt(r[arr_col]), _fmt_dt(r[upd_col]), float(r["_hrs"])])
+            for _, r in top.iterrows()
+        ]
+        return {"kpi": "Dock-to-Stock Time", "unit": "hours", "columns": cols, "rows": rows}
+
+    # ── GRN-to-Stock ───────────────────────────────────────────────────────────
+    if slug == "grn-to-stock":
+        df = _load_dataset("inbound_receipts")
+        if df is None or df.empty:
+            return {"kpi": kpi_slug, "columns": [], "rows": [], "no_data": True}
+        df, _ = _prepare_dataset(df, warehouse, timeframe, shift,
+                                 ["wh_id", "warehouse", "warehouse_id"],
+                                 ["last_upd_dt", "last_rcpt_conf_dte"],
+                                 date_from=date_from, date_to=date_to)
+        n = _normalize_columns(df) if df is not None and not df.empty else pd.DataFrame()
+        conf_col = _pick(n, ["last_rcpt_conf_dte", "receipt_confirmed_date", "grn_date"])
+        upd_col  = _pick(n, ["last_upd_dt", "last_update"])
+        id_col   = _pick(n, ["rcpt_id", "receipt_id", "po_num", "trlr_num"])
+        wh_col   = _pick(n, ["wh_id", "warehouse"])
+        if n.empty or not conf_col or not upd_col:
+            return {"kpi": kpi_slug, "columns": [], "rows": [], "no_data": True}
+        n["_hrs"] = ((pd.to_datetime(n[upd_col], errors="coerce") -
+                      pd.to_datetime(n[conf_col], errors="coerce"))
+                     .dt.total_seconds() / 3600).round(2)
+        top = n.dropna(subset=["_hrs"]).query("_hrs >= 0").nlargest(top_n, "_hrs")
+        cols = (["Receipt / PO"] if id_col else []) + (["Warehouse"] if wh_col else []) + ["GRN Date", "Last Updated", "Hours"]
+        rows = [
+            (([str(r.get(id_col, ""))] if id_col else []) +
+             ([str(r.get(wh_col, ""))] if wh_col else []) +
+             [_fmt_dt(r[conf_col]), _fmt_dt(r[upd_col]), float(r["_hrs"])])
+            for _, r in top.iterrows()
+        ]
+        return {"kpi": "GRN-to-Stock", "unit": "hours", "columns": cols, "rows": rows}
+
+    # ── Receiving Accuracy / Mismatch ─────────────────────────────────────────
+    if slug in ("receiving-accuracy", "total-mismatch-qty"):
+        df = _load_dataset("receiving_accuracy")
+        if df is None or df.empty:
+            return {"kpi": kpi_slug, "columns": [], "rows": [], "no_data": True}
+        df, _ = _prepare_dataset(df, warehouse, timeframe, shift,
+                                 ["wh_id", "warehouse"],
+                                 ["ins_dt", "last_upd_dt", "dwnld_dt"],
+                                 date_from=date_from, date_to=date_to)
+        n = _normalize_columns(df) if df is not None and not df.empty else pd.DataFrame()
+        exp_col = _pick(n, ["expqty", "expected_qty"])
+        rcv_col = _pick(n, ["rcvqty", "received_qty", "idnqty"])
+        sku_col = _pick(n, ["sku", "item_id", "sku_id", "item", "item_num"])
+        sup_col = _pick(n, ["supplier", "vendor", "vendor_id"])
+        wh_col  = _pick(n, ["wh_id", "warehouse"])
+        if n.empty or not exp_col or not rcv_col:
+            return {"kpi": kpi_slug, "columns": [], "rows": [], "no_data": True}
+        exp = pd.to_numeric(n[exp_col], errors="coerce").fillna(0)
+        rcv = pd.to_numeric(n[rcv_col], errors="coerce").fillna(0)
+        n["_mismatch"] = (exp - rcv).abs().round(2)
+        top = n[n["_mismatch"] > 0].nlargest(top_n, "_mismatch")
+        cols = (["SKU / Item"] if sku_col else []) + (["Warehouse"] if wh_col else []) + \
+               (["Supplier"] if sup_col else []) + ["Expected Qty", "Received Qty", "Mismatch"]
+        rows = [
+            (([str(r.get(sku_col, ""))] if sku_col else []) +
+             ([str(r.get(wh_col, ""))] if wh_col else []) +
+             ([str(r.get(sup_col, ""))] if sup_col else []) +
+             [int(exp[r.name]), int(rcv[r.name]), float(r["_mismatch"])])
+            for _, r in top.iterrows()
+        ]
+        return {"kpi": "Top Receiving Mismatches", "unit": "qty", "columns": cols, "rows": rows}
+
+    # ── Yard to Dock ──────────────────────────────────────────────────────────
+    if slug in ("yard-to-dock", "average-waiting-time-yard-to-dock",
+                "maximum-waiting-time", "minimum-waiting-time"):
+        df = _load_dataset("yard_activity")
+        if df is None or df.empty:
+            return {"kpi": kpi_slug, "columns": [], "rows": [], "no_data": True}
+        df, _ = _prepare_dataset(df, warehouse, timeframe, shift,
+                                 ["wh_id", "yard_loc_wh_id", "warehouse"],
+                                 ["trndte"],
+                                 date_from=date_from, date_to=date_to)
+        n = _normalize_columns(df) if df is not None and not df.empty else pd.DataFrame()
+        tcol       = _pick(n, ["trndte", "event_time", "timestamp"])
+        trailer_col = _pick(n, ["trlr_id", "trlr_num", "trlract_id"])
+        loc_col    = _pick(n, ["yard_loc"])
+        if n.empty or not tcol or not trailer_col:
+            return {"kpi": kpi_slug, "columns": [], "rows": [], "no_data": True}
+        work = n.copy()
+        work[tcol] = pd.to_datetime(work[tcol], errors="coerce")
+        work = work.dropna(subset=[tcol])
+        waits = []
+        for tid, grp in work.groupby(trailer_col):
+            g = grp.sort_values(tcol)
+            if loc_col:
+                locs = g[loc_col].astype(str)
+                dock_mask = locs.str.contains(r"DOOR|DOCK|BAY|GATE", case=False, na=False, regex=True)
+                yard_rows = g[~dock_mask]; dock_rows = g[dock_mask]
+                if yard_rows.empty or dock_rows.empty:
+                    if len(g) >= 2:
+                        mins = (g[tcol].iloc[-1] - g[tcol].iloc[0]).total_seconds() / 60
+                        if mins >= 0: waits.append((str(tid), round(mins, 1)))
+                    continue
+                dock_after = dock_rows[dock_rows[tcol] >= yard_rows[tcol].iloc[0]]
+                if dock_after.empty: continue
+                mins = (dock_after[tcol].iloc[0] - yard_rows[tcol].iloc[0]).total_seconds() / 60
+            else:
+                if len(g) < 2: continue
+                mins = (g[tcol].iloc[-1] - g[tcol].iloc[0]).total_seconds() / 60
+            if mins >= 0: waits.append((str(tid), round(mins, 1)))
+        waits.sort(key=lambda x: x[1], reverse=True)
+        return {"kpi": "Trailers with Longest Yard Wait", "unit": "minutes",
+                "columns": ["Trailer ID", "Wait Time (min)"],
+                "rows": [[t[0], t[1]] for t in waits[:top_n]]}
+
+    # ── Order Fill Rate / Short Qty ───────────────────────────────────────────
+    if slug in ("order-fill-rate", "short-qty", "shipped-qty"):
+        df = _load_dataset("outbound_orders")
+        if df is None or df.empty:
+            return {"kpi": kpi_slug, "columns": [], "rows": [], "no_data": True}
+        df, _ = _prepare_dataset(df, warehouse, timeframe, shift,
+                                 ["wh_id", "warehouse"],
+                                 ["ins_dt", "last_upd_dt", "dwnld_dt"],
+                                 date_from=date_from, date_to=date_to)
+        n = _normalize_columns(df) if df is not None and not df.empty else pd.DataFrame()
+        ord_col   = _pick(n, ["order_qty", "host_ord_qty"])
+        ship_col  = _pick(n, ["shipped_qty"])
+        short_col = _pick(n, ["short_qty"])
+        order_col = _pick(n, ["order_id", "ord_id", "ornum", "whshipment_id"])
+        wh_col    = _pick(n, ["wh_id", "warehouse"])
+        if n.empty or not ord_col or not ship_col:
+            return {"kpi": kpi_slug, "columns": [], "rows": [], "no_data": True}
+        ordered = pd.to_numeric(n[ord_col], errors="coerce").fillna(0)
+        shipped = pd.to_numeric(n[ship_col], errors="coerce").fillna(0)
+        shorts  = pd.to_numeric(n[short_col], errors="coerce").fillna(0) if short_col else (ordered - shipped).clip(lower=0)
+        n["_short"] = shorts.round(2)
+        top = n[n["_short"] > 0].nlargest(top_n, "_short")
+        cols = (["Order ID"] if order_col else []) + (["Warehouse"] if wh_col else []) + ["Ordered", "Shipped", "Shortage"]
+        rows = [
+            (([str(r.get(order_col, ""))] if order_col else []) +
+             ([str(r.get(wh_col, ""))] if wh_col else []) +
+             [int(ordered[r.name]), int(shipped[r.name]), float(r["_short"])])
+            for _, r in top.iterrows()
+        ]
+        return {"kpi": "Orders with Highest Shortage", "unit": "qty", "columns": cols, "rows": rows}
+
+    # ── Order Cycle Time variants ─────────────────────────────────────────────
+    if slug in ("order-cycle-time", "average-order-cycle-time",
+                "maximum-order-cycle-time", "minimum-order-cycle-time"):
+        df = _load_dataset("shipment_lifecycle")
+        if df is None or df.empty:
+            return {"kpi": kpi_slug, "columns": [], "rows": [], "no_data": True}
+        df, _ = _prepare_dataset(df, warehouse, timeframe, shift,
+                                 ["wh_id", "warehouse"],
+                                 ["dispatch_dte", "alcdte", "pckdte", "stgdte", "loddte"],
+                                 date_from=date_from, date_to=date_to)
+        n = _normalize_columns(df) if df is not None and not df.empty else pd.DataFrame()
+        alcdte   = _pick(n, ["alcdte"])
+        pckdte   = _pick(n, ["pckdte"])
+        stgdte   = _pick(n, ["stgdte"])
+        loddte   = _pick(n, ["loddte"])
+        dispatch = _pick(n, ["dispatch_dte", "dispatch_date"])
+        order_col = _pick(n, ["order_id", "ord_id", "ornum", "whshipment_id"])
+        if n.empty or not all([alcdte, pckdte, stgdte, loddte, dispatch]):
+            return {"kpi": kpi_slug, "columns": [], "rows": [], "no_data": True}
+        for c in [alcdte, pckdte, stgdte, loddte, dispatch]:
+            n[c] = pd.to_datetime(n[c], errors="coerce")
+        n["_total"] = ((n[dispatch] - n[alcdte]).dt.total_seconds() / 3600).round(2)
+        top = n.dropna(subset=["_total"]).query("_total >= 0").nlargest(top_n, "_total")
+        cols = (["Order ID"] if order_col else []) + ["Alloc", "Pick", "Stage", "Load", "Dispatch", "Total Hrs"]
+        rows = [
+            (([str(r.get(order_col, ""))] if order_col else []) +
+             [_fmt_dt(r[alcdte]), _fmt_dt(r[pckdte]), _fmt_dt(r[stgdte]),
+              _fmt_dt(r[loddte]), _fmt_dt(r[dispatch]), float(r["_total"])])
+            for _, r in top.iterrows()
+        ]
+        return {"kpi": "Orders with Longest Cycle Time", "unit": "hours", "columns": cols, "rows": rows}
+
+    # ── On-Time Dispatch — most delayed ───────────────────────────────────────
+    if slug == "on-time-dispatch":
+        df = _load_dataset("shipment_lifecycle")
+        if df is None or df.empty:
+            return {"kpi": kpi_slug, "columns": [], "rows": [], "no_data": True}
+        df, _ = _prepare_dataset(df, warehouse, timeframe, shift,
+                                 ["wh_id", "warehouse"],
+                                 ["dispatch_dte", "early_shpdte"],
+                                 date_from=date_from, date_to=date_to)
+        n = _normalize_columns(df) if df is not None and not df.empty else pd.DataFrame()
+        dispatch_col = _pick(n, ["dispatch_dte", "dispatch_date"])
+        target_col   = _pick(n, ["early_shpdte", "planned_dispatch_dte", "target_dispatch_dte"])
+        order_col    = _pick(n, ["order_id", "ord_id", "ornum", "whshipment_id"])
+        if n.empty or not dispatch_col or not target_col:
+            return {"kpi": kpi_slug, "columns": [], "rows": [], "no_data": True}
+        n[dispatch_col] = pd.to_datetime(n[dispatch_col], errors="coerce")
+        n[target_col]   = pd.to_datetime(n[target_col], errors="coerce")
+        late = n[n[dispatch_col] > n[target_col]].copy()
+        late["_delay"] = ((late[dispatch_col] - late[target_col]).dt.total_seconds() / 3600).round(2)
+        top = late.nlargest(top_n, "_delay")
+        cols = (["Order ID"] if order_col else []) + ["Target Dispatch", "Actual Dispatch", "Delay (hrs)"]
+        rows = [
+            (([str(r.get(order_col, ""))] if order_col else []) +
+             [_fmt_dt(r[target_col]), _fmt_dt(r[dispatch_col]), float(r["_delay"])])
+            for _, r in top.iterrows()
+        ]
+        return {"kpi": "Most Delayed Dispatches", "unit": "hours", "columns": cols, "rows": rows}
+
+    # ── Order Pendency — most overdue ─────────────────────────────────────────
+    if slug in ("order-pendency-percentage", "order-pendency-count"):
+        df = _load_dataset("shipment_lifecycle")
+        if df is None or df.empty:
+            return {"kpi": kpi_slug, "columns": [], "rows": [], "no_data": True}
+        df, _ = _prepare_dataset(df, warehouse, timeframe, shift,
+                                 ["wh_id", "warehouse"],
+                                 ["early_shpdte", "dispatch_dte"],
+                                 date_from=date_from, date_to=date_to)
+        n = _normalize_columns(df) if df is not None and not df.empty else pd.DataFrame()
+        dispatch_col = _pick(n, ["dispatch_dte", "dispatch_date"])
+        target_col   = _pick(n, ["early_shpdte", "planned_dispatch_dte"])
+        order_col    = _pick(n, ["order_id", "ord_id", "ornum", "whshipment_id"])
+        if n.empty or not target_col:
+            return {"kpi": kpi_slug, "columns": [], "rows": [], "no_data": True}
+        n[target_col] = pd.to_datetime(n[target_col], errors="coerce")
+        now_ts = pd.Timestamp.now()
+        mask = n[target_col].notna() & (n[target_col] < now_ts)
+        if dispatch_col:
+            n[dispatch_col] = pd.to_datetime(n[dispatch_col], errors="coerce")
+            mask &= n[dispatch_col].isna()
+        pending = n[mask].copy()
+        pending["_overdue"] = ((now_ts - pending[target_col]).dt.total_seconds() / 3600).round(1)
+        top = pending.nlargest(top_n, "_overdue")
+        cols = (["Order ID"] if order_col else []) + ["Target Dispatch", "Overdue (hrs)"]
+        rows = [
+            (([str(r.get(order_col, ""))] if order_col else []) +
+             [_fmt_dt(r[target_col]), float(r["_overdue"])])
+            for _, r in top.iterrows()
+        ]
+        return {"kpi": "Most Overdue Pending Orders", "unit": "hours", "columns": cols, "rows": rows}
+
+    return {"kpi": kpi_slug, "columns": [], "rows": [], "no_data": True,
+            "message": "Drill-down not available for this KPI."}

@@ -9,7 +9,8 @@ import {
 } from "lucide-react";
 import AppShell from "@/components/AppShell";
 import FilterBar, { FilterDef } from "@/components/FilterBar";
-import { getWmsKpis, getTmsKpis, getPlanningKpis, getCrossKpis, getCrossAlerts, ALL_MONTHS } from "@/lib/loadData";
+import DataDrilldownModal, { TableDrilldown } from "@/components/DataDrilldownModal";
+import { getWmsKpis, getTmsKpis, getPlanningKpis, getCrossKpis, getCrossAlerts, ALL_MONTHS, DATA_CONNECTED } from "@/lib/loadData";
 
 const WAREHOUSES = ["All", "DEL", "MUM", "BLR"];
 const CATEGORIES = ["All", "Personal Care", "Food & Beverages", "Household"];
@@ -120,6 +121,7 @@ export default function ControlTowerPage() {
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [lastRefresh, setLastRefresh] = useState("");
   const [dismissed, setDismissed] = useState<string[]>([]);
+  const [drilldown, setDrilldown] = useState<TableDrilldown | null>(null);
 
   const set = (id: string, val: string) => setFilters((f) => ({ ...f, [id]: val }));
   const reset = () => setFilters(DEFAULT_FILTERS);
@@ -133,7 +135,7 @@ export default function ControlTowerPage() {
   const tms      = getTmsKpis(warehouse);
   const planning = getPlanningKpis(warehouse);
   const cross    = getCrossKpis(wms, tms, planning);
-  const alerts   = getCrossAlerts().filter((a) => !dismissed.includes(a.id));
+  const alerts   = (DATA_CONNECTED ? getCrossAlerts(wms, tms, planning) : []).filter((a) => !dismissed.includes(a.id));
 
   // Node reliability scores
   const supplierScore  = Math.round(tms.tenderAcceptance);
@@ -142,8 +144,30 @@ export default function ControlTowerPage() {
   const tmsOutScore    = Math.round(tms.onTimeDelivery - 1.5);
   const customerScore  = Math.round(cross.perfectOrderRate);
 
+  const WHS = ["DEL", "MUM", "BLR"] as const;
+
+  const openPlanningDrilldown = (label: string) => {
+    const rows = WHS.map((wh) => {
+      const k = getPlanningKpis(wh);
+      const vals: Record<string, number> = {
+        "Total SKUs Tracked": k.totalSkus,
+        "High Stockout Risk":  k.stockoutRiskHigh,
+        "Avg Days of Cover":   k.avgDaysOfCover,
+        "Inventory Value":     k.inventoryValueCr,
+      };
+      return [wh, vals[label] ?? 0] as [string, number];
+    }).sort((a, b) => (b[1] as number) - (a[1] as number));
+    setDrilldown({
+      kpi: label + " — by Warehouse",
+      subtitle: "Per-warehouse breakdown from Planning data",
+      columns: ["Warehouse", label],
+      rows,
+    });
+  };
+
   return (
     <AppShell>
+      {drilldown && <DataDrilldownModal data={drilldown} onClose={() => setDrilldown(null)} />}
       {/* ── Header ── */}
       <div className="flex items-center justify-between mb-4">
         <div>
@@ -165,11 +189,23 @@ export default function ControlTowerPage() {
 
       {/* ── Pulse metrics ── */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-        <PulseCard label="Perfect Order Rate"       value={cross.perfectOrderRate}       unit="%" delta="+1.8%"  positive />
-        <PulseCard label="SC Reliability"           value={cross.supplyChainReliability} unit="%" delta="+2.1%"  positive />
-        <PulseCard label="Carrier-to-Shelf"         value={cross.carrierToShelfDays}     unit="d" delta="-0.2d"  positive />
-        <PulseCard label="Active Alerts"            value={alerts.length}                unit=""  delta={`${alerts.filter(a=>a.severity==="critical").length} critical`} positive={false} />
-        <PulseCard label="Stockout Risk SKUs"       value={planning.stockoutRiskHigh}    unit=""  delta="+3 SKUs" positive={false} />
+        {DATA_CONNECTED ? (
+          <>
+            <PulseCard label="Perfect Order Rate"   value={cross.perfectOrderRate}       unit="%" delta="vs target" positive={cross.perfectOrderRate >= 80} />
+            <PulseCard label="SC Reliability"       value={cross.supplyChainReliability} unit="%" delta="weighted composite" positive={cross.supplyChainReliability >= 85} />
+            <PulseCard label="Carrier-to-Shelf"     value={cross.carrierToShelfDays}     unit="d" delta="transit + put-away" positive={cross.carrierToShelfDays <= 3} />
+            <PulseCard label="Active Alerts"        value={alerts.length}                unit=""  delta={`${alerts.filter(a=>a.severity==="critical").length} critical`} positive={alerts.length === 0} />
+            <PulseCard label="Stockout Risk SKUs"   value={planning.stockoutRiskHigh}    unit=""  delta="high risk" positive={planning.stockoutRiskHigh === 0} />
+          </>
+        ) : (
+          ["Perfect Order Rate", "SC Reliability", "Carrier-to-Shelf", "Active Alerts", "Stockout Risk SKUs"].map((label) => (
+            <div key={label} className="card p-4">
+              <p className="text-[10px] uppercase tracking-wide text-slate-400 font-medium">{label}</p>
+              <p className="text-2xl font-bold text-slate-300 mt-1">—</p>
+              <p className="text-xs text-slate-300 mt-1">No data</p>
+            </div>
+          ))
+        )}
       </div>
 
       {/* ── Supply Chain Flow ── */}
@@ -271,7 +307,9 @@ export default function ControlTowerPage() {
             { label: "Avg Days of Cover",      value: `${planning.avgDaysOfCover}d`,        sub: "target ≥ 21 days",            color: planning.avgDaysOfCover >= 21 ? "text-emerald-600" : "text-amber-600" },
             { label: "Inventory Value",        value: `₹${planning.inventoryValueCr} Cr`,  sub: "current holding",             color: "text-indigo-600" },
           ].map((item) => (
-            <div key={item.label} className="bg-slate-50 rounded-lg p-4">
+            <div key={item.label} className="bg-slate-50 rounded-lg p-4 relative cursor-pointer hover:shadow-md hover:bg-slate-100 transition-all"
+              onClick={() => openPlanningDrilldown(item.label)}>
+              <span className="absolute top-2 right-2 text-[9px] text-slate-400 bg-white px-1.5 py-0.5 rounded-full">drill down ↗</span>
               <p className="text-[10px] uppercase tracking-wide text-slate-400 font-medium">{item.label}</p>
               <p className={`text-xl font-bold mt-1 ${item.color}`}>{item.value}</p>
               <p className="text-[10px] text-slate-400 mt-0.5">{item.sub}</p>

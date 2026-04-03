@@ -27,7 +27,7 @@ export default function KPIWidget({
   trend: string;
   risk: BadgeTone;
   tooltip: string;
-  sparkline: number[];
+  sparkline?: number[];
 }) {
   const [display, setDisplay] = useState(0);
 
@@ -47,7 +47,7 @@ export default function KPIWidget({
     return () => clearInterval(timer);
   }, [value]);
 
-  const data = useMemo(() => sparkline.map((v, i) => ({ i, v })), [sparkline]);
+  const data = useMemo(() => (sparkline ?? []).map((v, i) => ({ i, v })), [sparkline]);
 
   return (
     <motion.div
