@@ -20,7 +20,7 @@ const NAV = [
 
 const EXTERNAL = [
   { href: "https://baf-eight.vercel.app/dashboard", label: "WMS",  icon: Warehouse },
-  { href: "https://tms-voice-one.vercel.app",        label: "TMS",  icon: Truck },
+  { href: "https://tms-voice-one.vercel.app/dashboard", label: "TMS",  icon: Truck },
 ];
 
 export default function Sidebar() {
