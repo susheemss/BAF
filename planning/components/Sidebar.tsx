@@ -19,8 +19,8 @@ const NAV = [
 ];
 
 const EXTERNAL = [
-  { href: "http://localhost:3000/dashboard", label: "WMS",  icon: Warehouse },
-  { href: "http://localhost:3001",           label: "TMS",  icon: Truck },
+  { href: "https://baf-eight.vercel.app/dashboard", label: "WMS",  icon: Warehouse },
+  { href: "http://localhost:3001",                  label: "TMS",  icon: Truck },
 ];
 
 export default function Sidebar() {
