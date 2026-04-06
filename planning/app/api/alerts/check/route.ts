@@ -6,6 +6,9 @@ import { ALERT_RULES, ALERT_RECIPIENTS, evaluateRule, type KpiSnapshot } from "@
 import { getDrillDown } from "@/lib/drillDownData";
 import { buildConsolidatedEmail, type BreachItem } from "@/lib/alertEmailTemplate";
 
+// ─── Set to true when you want email alerts to go out again ──────────────────
+const EMAIL_ALERTS_ENABLED = false;
+
 // ─── Cooldown store (file-based for MVP) ──────────────────────────────────────
 const COOLDOWN_FILE = path.join(process.cwd(), ".alert-cooldown.json");
 
@@ -110,7 +113,7 @@ export async function POST(req: NextRequest) {
       const recipients  = ALERT_RECIPIENTS[hasCritical ? "critical" : "warning"];
       const { subject, html } = buildConsolidatedEmail(breachItems, firedAt);
 
-      if (process.env.ALERT_FROM_EMAIL && process.env.ALERT_APP_PASSWORD) {
+      if (EMAIL_ALERTS_ENABLED && process.env.ALERT_FROM_EMAIL && process.env.ALERT_APP_PASSWORD) {
         try {
           await transport.sendMail({
             from:    `"Supply Chain Intelligence Platform" <${process.env.ALERT_FROM_EMAIL}>`,

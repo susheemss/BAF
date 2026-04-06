@@ -1,0 +1,480 @@
+================================================================================
+                    ARVIND SUPPLY CHAIN SOLUTIONS PVT. LTD.
+                         INTERNAL OPERATIONS INCIDENT LOG
+                              Confidential — Internal Use Only
+================================================================================
+
+Document Owner   : Head of Supply Chain Operations
+Maintained By    : Operations Control Tower Team
+Review Frequency : Monthly
+Last Updated     : March 2025
+
+--------------------------------------------------------------------------------
+PURPOSE OF THIS DOCUMENT
+--------------------------------------------------------------------------------
+
+This document captures all major supply chain disruptions, their root causes,
+the steps taken by the team to resolve them, and the outcome. It is meant to
+serve as an institutional memory so that when similar problems arise in the
+future, the team does not start from scratch.
+
+Every team member involved in operations, logistics, warehouse, or planning
+is encouraged to read through relevant sections before escalating a new issue.
+
+If a similar incident has occurred before, follow the steps outlined here first.
+
+--------------------------------------------------------------------------------
+
+
+================================================================================
+SECTION 1 — ON-TIME IN-FULL (OTIF) INCIDENTS
+================================================================================
+
+
+INCIDENT REPORT — REF: OPS-2024-001
+--------------------------------------
+Date of Incident   : 14 January 2024
+Reported By        : Rajiv Menon, Logistics Manager
+KPI Affected       : OTIF (On-Time In-Full)
+Severity           : CRITICAL
+Status             : RESOLVED
+
+WHAT HAPPENED:
+Our OTIF dropped sharply from 94.2% to 76.8% within a single week. Three of
+our major retail clients — RetailCo, MegaMart, and FreshDirect — called in to
+report delayed shipments. The problem was concentrated in the North and Ecom
+lanes. Customer service was getting flooded with calls.
+
+ROOT CAUSE:
+Our carrier FastLane Logistics had a fleet breakdown. Six out of their fourteen
+trucks were pulled off the road for mandatory government safety inspections.
+They did not inform us in advance. Since we had no backup carrier assigned for
+these lanes, there was no way to reroute the load quickly.
+
+WHAT WE DID:
+Step 1 — Called Maersk Road and negotiated emergency capacity for the North
+          lane on the same day we identified the issue.
+Step 2 — Rerouted 38 pending shipments from FastLane to Hapag Lyod. This came
+          at a 12% premium but we had no choice.
+Step 3 — Reached out to all affected customers within 4 hours. Sent revised
+          ETAs and apologized for the disruption. Did not wait for them to call us.
+Step 4 — Set up a daily 8AM war room call with logistics, warehouse, and
+          customer service for 2 weeks until things stabilised.
+Step 5 — Sent a formal letter to FastLane requiring 72-hour advance notice for
+          any fleet reduction above 20%. Updated the SLA agreement accordingly.
+Step 6 — Added FastLane to Watch status in our carrier performance tracker.
+
+OUTCOME:
+OTIF recovered to 89.3% within 10 days and 93.7% by end of month.
+RetailCo requested a credit note of Rs. 11.5 Lakhs for the delays. Approved
+by finance and issued.
+
+TIME TO RESOLVE: 12 days
+
+WHAT WE PUT IN PLACE AFTER THIS:
+- Every Tier-1 lane must now have a backup carrier pre-assigned.
+- Every Monday, logistics team confirms carrier capacity for the coming week.
+- OTIF alert threshold set at 88%. Below that, logistics manager is auto-notified.
+
+
+------------------------------------------------------------------------
+
+
+INCIDENT REPORT — REF: OPS-2024-002
+--------------------------------------
+Date of Incident   : 3 April 2024
+Reported By        : Priya Sharma, Control Tower Analyst
+KPI Affected       : OTIF (On-Time In-Full)
+Severity           : HIGH
+Status             : RESOLVED
+
+WHAT HAPPENED:
+OTIF fell to 81% in the South lane. We had 47 shipments that were marked
+"In Transit" but had gone more than 5 days past their estimated delivery date
+with no update. No notifications had gone out to customers. Nobody had flagged
+this internally either. We only found out when a client called to complain.
+
+ROOT CAUSE:
+A routine ERP system update had accidentally reset all automated notification
+triggers. The alert system was silently failing — shipments were delayed but no
+one inside or outside the company was being notified. This went undetected for
+6 full days.
+
+WHAT WE DID:
+Step 1 — IT team rolled back the ERP notification module to the previous
+          stable version immediately.
+Step 2 — Ran a manual audit of all open shipments. Found 47 late and 12 more
+          that were at risk of being late.
+Step 3 — Customer service team personally called all 47 affected customers
+          within 24 hours. No emails — actual calls.
+Step 4 — Issued revised ETAs for every delayed shipment.
+Step 5 — Arranged air freight for 9 high-priority shipments where the delay
+          was unacceptable. Additional cost was Rs. 25 Lakhs, approved by COO.
+Step 6 — Set up a parallel manual monitoring process while the ERP was being
+          fixed — daily CSV export that the control tower team reviewed manually.
+
+OUTCOME:
+OTIF recovered to 90.1% over 3 weeks. One client escalated to the account
+management team. Resolved with a 5% discount on their next order.
+
+TIME TO RESOLVE: 18 days
+
+WHAT WE PUT IN PLACE AFTER THIS:
+- ERP updates must now pass a pre-deployment checklist that includes testing
+  all notification triggers.
+- A daily OTIF report is automatically emailed to the logistics head every
+  morning at 7AM as a backup to the system alerts.
+- Any shipment with no status update for 48 hours now triggers a flag in the
+  control tower dashboard.
+
+
+------------------------------------------------------------------------
+
+
+INCIDENT REPORT — REF: OPS-2024-003
+--------------------------------------
+Date of Incident   : 22 July 2024
+Reported By        : Warehouse Dispatch Supervisor
+KPI Affected       : OTIF (On-Time In-Full)
+Severity           : MEDIUM
+Status             : RESOLVED
+
+WHAT HAPPENED:
+OTIF dipped to 85.4% and stayed there for two consecutive weeks. Unlike the
+previous incidents, this was not tied to one carrier or one lane. The drop was
+spread across multiple carriers and routes. Dispatch was consistently running
+6 to 8 hours behind schedule every day.
+
+ROOT CAUSE:
+Post-monsoon restocking season hit us harder than expected. Order volumes were
+34% higher than the same period last year, but we had not added any staffing.
+The dispatch team was simply overwhelmed. Nobody had flagged the volume
+forecast to the operations head.
+
+WHAT WE DID:
+Step 1 — Hired 14 temporary dispatch associates through our staffing agency
+          within 3 days.
+Step 2 — Extended existing staff shifts from 8 to 10 hours with overtime pay
+          for 4 weeks.
+Step 3 — Prioritised the dispatch queue by customer tier. Tier-1 clients
+          processed first, others queued behind.
+Step 4 — Coordinated with the warehouse team to pre-stage the top 200 SKUs
+          near the dispatch dock so pick time was reduced.
+Step 5 — Paused all non-urgent returns processing for 3 weeks to free up dock
+          space and staff bandwidth.
+
+OUTCOME:
+OTIF climbed back to 92.6% within 3 weeks. No client escalations.
+
+TIME TO RESOLVE: 21 days
+
+WHAT WE PUT IN PLACE AFTER THIS:
+- A seasonal staffing plan is now prepared every year for Q3 and Q4.
+- Dispatch capacity vs. incoming order volume is tracked every week.
+- The 30-day rolling demand forecast is now shared with the dispatch planning
+  team every Monday.
+
+
+================================================================================
+SECTION 2 — DELAY RATE INCIDENTS
+================================================================================
+
+
+INCIDENT REPORT — REF: OPS-2024-004
+--------------------------------------
+Date of Incident   : 19 February 2024
+Reported By        : TMS Analyst, West Region
+KPI Affected       : Delay Rate
+Severity           : HIGH
+Status             : RESOLVED
+
+WHAT HAPPENED:
+Delay rate spiked from 6.2% to 22.7% on the Mumbai-Delhi corridor almost
+overnight. All other regions were normal. It was clearly a route-specific
+problem.
+
+ROOT CAUSE:
+NH-48 had been partially closed for infrastructure repairs. The National
+Highways Authority had announced this 3 days in advance, but no one had
+flagged it to the logistics team and no route changes had been made in the TMS.
+
+WHAT WE DID:
+Step 1 — Switched all Mumbai-Delhi shipments to NH-8 immediately. Each trip
+          added approximately 4 hours but deliveries were getting through.
+Step 2 — Notified all affected customers and gave revised ETAs.
+Step 3 — For pharmaceutical and perishable shipments where 4 extra hours was
+          not acceptable, arranged rail freight as an alternative.
+Step 4 — Coordinated with carrier dispatchers to update their route maps.
+
+OUTCOME:
+Delay rate dropped to 9.1% within 1 week once alternate routes were in use.
+Normalized fully to 5.8% after the highway reopened.
+
+TIME TO RESOLVE: 9 days
+
+WHAT WE PUT IN PLACE AFTER THIS:
+- Subscribed to the National Highways Authority disruption alert service.
+- Created an alternate route playbook for all major corridors. Every lane now
+  has a documented Plan B.
+- TMS system flags any route that has an active disruption notice.
+
+
+------------------------------------------------------------------------
+
+
+INCIDENT REPORT — REF: OPS-2024-005
+--------------------------------------
+Date of Incident   : 5 September 2024
+Reported By        : Carrier Performance Team
+KPI Affected       : Delay Rate
+Severity           : MEDIUM
+Status             : RESOLVED
+
+WHAT HAPPENED:
+One specific carrier, SpeedFreight, was showing a delay rate of 38% over 3
+weeks. Every other carrier on the same routes was performing normally. So the
+problem was clearly with SpeedFreight and not the route or the season.
+
+ROOT CAUSE:
+SpeedFreight had recently onboarded a batch of new drivers. These drivers were
+not familiar with our delivery zones and did not know the client-specific
+unloading requirements at each site. They were taking much longer at each stop
+and missing their delivery windows as a result.
+
+WHAT WE DID:
+Step 1 — Called a performance review meeting with SpeedFreight's operations
+          head. Shared the delay data lane by lane.
+Step 2 — Shared our delivery zone guide and client unloading SOPs with their
+          training team.
+Step 3 — Temporarily cut our shipment allocation to SpeedFreight by 60%.
+          Moved that volume to Maersk and Hapag Lyod.
+Step 4 — Did a joint ride-along on 3 actual SpeedFreight deliveries to see
+          exactly where time was being lost.
+
+OUTCOME:
+SpeedFreight delay rate dropped to 11% after 4 weeks of retraining.
+We gradually restored their allocation over 6 weeks.
+
+TIME TO RESOLVE: 28 days
+
+WHAT WE PUT IN PLACE AFTER THIS:
+- All new carrier drivers must now complete a zone familiarisation checklist
+  before being assigned to live routes.
+- New carriers go through a 2-week supervised period before full allocation.
+- Monthly carrier scorecard now shared with all active carriers.
+
+
+================================================================================
+SECTION 3 — COST PER SHIPMENT INCIDENTS
+================================================================================
+
+
+INCIDENT REPORT — REF: OPS-2024-006
+--------------------------------------
+Date of Incident   : 11 March 2024
+Reported By        : Finance and Logistics Team
+KPI Affected       : Cost Per Shipment
+Severity           : HIGH
+Status             : RESOLVED
+
+WHAT HAPPENED:
+Average cost per shipment jumped from $1,242 to $1,897 — a 52% increase over
+6 weeks. Total freight spend was 28% above budget for the quarter.
+The CFO flagged it in the monthly business review and asked for an explanation.
+
+ROOT CAUSE:
+Two things happened at the same time. First, carriers introduced a fuel
+surcharge (average 18% on top of base rates) due to crude price increases.
+Second, and more importantly, the annual carrier contracts had expired in
+January and the procurement team had not renewed them. This meant 41% of our
+shipments were being booked on spot rates, which are always significantly
+higher than contracted rates.
+
+WHAT WE DID:
+Step 1 — Emergency contract renewal with our top 4 carriers. Rates locked in
+          for 12 months. Negotiated hard given our volume.
+Step 2 — Brought spot bookings down below 15% of total volume.
+Step 3 — Negotiated a fuel surcharge cap clause into all new contracts — capped
+          at 10% above the base rate.
+Step 4 — Did a lane-by-lane cost analysis. Found 6 lanes where we could
+          consolidate shipments and reduce trip frequency.
+Step 5 — Introduced LTL consolidation for low-volume lanes.
+
+OUTCOME:
+Cost per shipment came down to $1,380 within 8 weeks.
+Estimated annual savings of $2.1 million compared to staying on spot rates.
+
+TIME TO RESOLVE: 8 weeks
+
+WHAT WE PUT IN PLACE AFTER THIS:
+- A carrier contract renewal calendar with a 90-day advance reminder.
+- If spot bookings in any week exceed 20%, procurement head is automatically
+  alerted.
+- Monthly freight cost dashboard is now reviewed by CFO and logistics head
+  together.
+
+
+================================================================================
+SECTION 4 — WAREHOUSE OPERATIONS INCIDENTS
+================================================================================
+
+
+INCIDENT REPORT — REF: OPS-2024-008
+--------------------------------------
+Date of Incident   : 20 May 2024
+Reported By        : Warehouse Manager, Central DC
+KPI Affected       : Inbound Velocity (Dock to Stock Time)
+Severity           : HIGH
+Status             : RESOLVED
+
+WHAT HAPPENED:
+Dock to stock time shot up from 4.2 hours to 11.7 hours over 2 days. At the
+peak of the problem, 38 trucks were waiting more than 3 hours just to get to
+an unloading dock. Carrier partners started calling to complain.
+
+ROOT CAUSE:
+Three receiving dock doors were offline for scheduled maintenance. The
+maintenance was originally supposed to take 2 days but got extended to 7 days
+because replacement parts were delayed. At the same time, one of our large
+suppliers, SUP-204, sent 3 unplanned truckloads without prior appointment —
+double their normal weekly volume.
+
+WHAT WE DID:
+Step 1 — Redirected inbound trucks to use the outbound dock during the morning
+          window (6AM to 10AM) when outbound activity is low.
+Step 2 — Extended receiving shift to 24 hours for 1 week and brought in
+          additional staff.
+Step 3 — Called SUP-204 and asked them to hold 2 of their 3 unplanned trucks
+          for the following week.
+Step 4 — Sourced the maintenance replacement parts from a local vendor to
+          speed up completion.
+
+OUTCOME:
+Dock to stock time came back to 4.8 hours within 6 days.
+
+TIME TO RESOLVE: 6 days
+
+WHAT WE PUT IN PLACE AFTER THIS:
+- All dock maintenance must be scheduled during mid-month, which is our
+  lowest-volume window.
+- Supplier appointment scheduling is now mandatory. Unannounced deliveries
+  will be asked to wait up to 24 hours.
+- Maximum 2 dock doors allowed to be offline at the same time.
+
+
+------------------------------------------------------------------------
+
+
+INCIDENT REPORT — REF: OPS-2024-009
+--------------------------------------
+Date of Incident   : 8 August 2024
+Reported By        : Quality Control Team
+KPI Affected       : Receiving Accuracy
+Severity           : CRITICAL
+Status             : RESOLVED
+
+WHAT HAPPENED:
+Receiving accuracy crashed to 71.3% — against our target of 95%. During cycle
+counts, we were finding inventory in completely wrong locations. Wrong items
+were being put away in wrong bins. The inbound zone was essentially becoming
+unreliable.
+
+ROOT CAUSE:
+We had hired a batch of temporary workers for the peak season. They had not
+completed put-away SOP training properly. To work faster, they were skipping
+the barcode scan confirmation step. This was causing systematic misplacements
+and nobody had caught it for several days.
+
+WHAT WE DID:
+Step 1 — Immediately stopped all temp worker put-away activity.
+Step 2 — Ran an emergency 2-hour training session on the barcode scan
+          protocol — every temp worker attended.
+Step 3 — Paired one permanent staff member with every 3 temp workers to
+          supervise until accuracy recovered.
+Step 4 — Did a full location audit of the inbound zone — found and corrected
+          214 misplaced items.
+Step 5 — Worked with IT to enforce mandatory scan confirmation in the WMS —
+          system now cannot complete a put-away transaction without the scan.
+
+OUTCOME:
+Receiving accuracy recovered to 93.8% within 1 week and 96.2% the week after.
+
+TIME TO RESOLVE: 10 days
+
+WHAT WE PUT IN PLACE AFTER THIS:
+- Temp workers must pass a practical receiving accuracy test before working
+  independently in the inbound zone.
+- Scan confirmation is now permanently system-enforced — cannot be bypassed.
+- Random spot-check of 50 locations done daily to catch issues early.
+
+
+================================================================================
+SECTION 5 — DEMAND PLANNING INCIDENTS
+================================================================================
+
+
+INCIDENT REPORT — REF: OPS-2024-011
+--------------------------------------
+Date of Incident   : 2 December 2024
+Reported By        : Demand Planning Team Lead
+KPI Affected       : Stockout Rate, Days of Cover
+Severity           : CRITICAL
+Status             : RESOLVED
+
+WHAT HAPPENED:
+Seven of our high-velocity SKUs went into stockout simultaneously. Days of
+cover had hit zero. We had to cancel or back-order customer orders on these
+items. Estimated lost revenue was Rs. 2.8 Crore. This was one of the worst
+stockout events we have had in 3 years.
+
+ROOT CAUSE:
+The demand plan for Q4 was built using last year's Q4 as the baseline. What
+nobody had communicated to the planning team was that the sales team had
+launched a major promotional campaign for these exact 7 SKUs. The campaign
+drove a 60% surge in orders. Sales and planning were not talking to each other.
+
+WHAT WE DID:
+Step 1 — Raised emergency purchase orders with suppliers for all 7 SKUs the
+          same day. Requested expedited delivery.
+Step 2 — Used air freight for 3 SKUs where sea freight lead time was too long.
+Step 3 — Communicated back-order timelines to all affected customers within
+          48 hours — proactively, before they called us.
+Step 4 — Asked the sales team to pause the promotions on these 7 SKUs until
+          stock was replenished.
+Step 5 — Allocated whatever remaining stock we had to highest-priority
+          customers based on order value and relationship.
+
+OUTCOME:
+5 of the 7 SKUs were restocked within 10 days.
+2 SKUs took 22 days due to supplier lead time constraints.
+
+TIME TO RESOLVE: 22 days
+
+WHAT WE PUT IN PLACE AFTER THIS:
+- A weekly S&OP meeting is now mandatory. Sales, planning, and procurement
+  must all attend. No exceptions.
+- Any marketing campaign expecting a demand impact of more than 15% must be
+  submitted to the demand planning team at least 4 weeks in advance.
+- Safety stock for all Tier-1 SKUs recalculated using a 95% service level.
+
+
+================================================================================
+QUICK REFERENCE — ALL INCIDENTS AT A GLANCE
+================================================================================
+
+  Ref ID          KPI Affected           Brief Cause                   Resolved In
+  --------------------------------------------------------------------------
+  OPS-2024-001    OTIF                   Carrier fleet breakdown        12 days
+  OPS-2024-002    OTIF                   ERP update broke alerts        18 days
+  OPS-2024-003    OTIF                   Peak season, understaffed      21 days
+  OPS-2024-004    Delay Rate             Highway closed, no rerouting   9 days
+  OPS-2024-005    Delay Rate             New drivers not trained        28 days
+  OPS-2024-006    Cost Per Shipment      Contracts expired, spot rates  8 weeks
+  OPS-2024-008    Inbound Velocity       Dock maintenance overrun       6 days
+  OPS-2024-009    Receiving Accuracy     Temp workers skipped scans     10 days
+  OPS-2024-011    Stockout               Sales did not inform planning  22 days
+
+================================================================================
+                            END OF DOCUMENT
+         For queries contact: ops-control-tower@arvind-sc.com
+================================================================================
