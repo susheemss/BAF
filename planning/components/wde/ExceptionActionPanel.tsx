@@ -147,7 +147,7 @@ export default function ExceptionActionPanel({
                       disabled={executingId.length > 0}
                       className="mt-2 rounded-lg bg-brand-primary px-2 py-1 text-xs font-semibold text-white disabled:opacity-60"
                     >
-                      {executingId === action.action_id ? "Logging..." : "Log Action for Review"}
+                      {executingId === action.action_id ? "Sending..." : "Approve & Send to Ops Team"}
                     </button>
                   </div>
                 ))}
@@ -158,7 +158,7 @@ export default function ExceptionActionPanel({
                 disabled={executingId.length > 0}
                 className="mt-3 rounded-lg border border-slate-300 px-2 py-1 text-xs font-semibold text-slate-700 disabled:opacity-60"
               >
-                Log All Actions for This Exception
+                Approve & Send All Actions to Ops Team
               </button>
             </div>
           ))}

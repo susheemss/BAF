@@ -24,7 +24,7 @@ import {
 
 const NAV = [
   { href: "/dashboard",     label: "Overview",         icon: LayoutDashboard },
-  { href: "/control-tower", label: "Control Tower",    icon: Radio },
+  { href: "/control-tower", label: "Resilient CT",      icon: Radio },
   { href: "/demand",        label: "Demand Planning",  icon: TrendingUp },
   { href: "/supply",        label: "Supply Planning",  icon: PackageSearch },
   { href: "/data",          label: "Data Hub",         icon: Database },
@@ -136,7 +136,7 @@ export default function Sidebar() {
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-white/10 hover:text-white transition-colors w-full"
         >
           <BookOpen size={15} className="shrink-0 text-teal-400" />
-          <span>Knowledge Base</span>
+          <span>Gen AI Assistant</span>
           <span className="ml-auto text-[10px] text-slate-500">↗</span>
         </a>
       </div>

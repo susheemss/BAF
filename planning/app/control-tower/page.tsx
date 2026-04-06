@@ -172,7 +172,7 @@ export default function ControlTowerPage() {
       <div className="flex items-center justify-between mb-4">
         <div>
           <p className="text-xs uppercase tracking-widest text-indigo-500 font-semibold">Live View</p>
-          <h2 className="text-xl font-bold text-slate-900 mt-0.5">Control Tower</h2>
+          <h2 className="text-xl font-bold text-slate-900 mt-0.5">Resilient Control Tower</h2>
           <p className="text-sm text-slate-400 mt-0.5">End-to-end supply chain signal board</p>
         </div>
         <div className="flex items-center gap-3">
