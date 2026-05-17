@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   Warehouse, Truck, PackageSearch, Zap,
-  TrendingUp, TrendingDown, Minus, AlertTriangle, CheckCircle2, Bell, ArrowRight,
+  TrendingUp, TrendingDown, Minus, AlertTriangle, CheckCircle2, Bell, ArrowRight, Presentation,
 } from "lucide-react";
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend,
@@ -19,6 +19,7 @@ import {
   getWmsKpis, getTmsKpis, getPlanningKpis, getCrossKpis,
   getMonthlyTrend, getCrossAlerts, ALL_MONTHS, DATA_CONNECTED,
 } from "@/lib/loadData";
+import { generatePresentation } from "@/lib/generatePresentation";
 
 const WAREHOUSES  = ["All", "DEL", "MUM", "BLR"];
 const CATEGORIES  = ["All", "Personal Care", "Food & Beverages", "Household"];
@@ -101,9 +102,10 @@ function CrossKpiCard({
 
 export default function DashboardPage() {
   const [filters,        setFilters]        = useState(DEFAULT_FILTERS);
-  const [alertPanelOpen, setAlertPanelOpen] = useState(false);
-  const [activeBreaches, setActiveBreaches] = useState<string[]>([]);
-  const [drilldown,      setDrilldown]      = useState<TableDrilldown | null>(null);
+  const [alertPanelOpen,   setAlertPanelOpen]   = useState(false);
+  const [activeBreaches,   setActiveBreaches]   = useState<string[]>([]);
+  const [drilldown,        setDrilldown]        = useState<TableDrilldown | null>(null);
+  const [buildingDeck,     setBuildingDeck]     = useState(false);
 
   const set = (id: string, val: string) => setFilters((f) => ({ ...f, [id]: val }));
   const reset = () => setFilters(DEFAULT_FILTERS);
@@ -146,6 +148,30 @@ export default function DashboardPage() {
   const trend_   = allTrend.slice(fromIdx, toIdx < 1 ? undefined : toIdx);
 
   const alerts   = DATA_CONNECTED ? getCrossAlerts(wms, tms, planning) : [];
+
+  const handlePresent = async () => {
+    setBuildingDeck(true);
+    try {
+      const dateRange = [filters.fromMonth, filters.toMonth]
+        .filter((m) => m !== "All").join(" – ") || "Sep 2024 – Feb 2025";
+      const warehouseBreakdown = (["DEL", "MUM", "BLR"] as const).map((wh) => {
+        const w = getWmsKpis(wh);
+        const t = getTmsKpis(wh);
+        return { wh, onTimeDispatch: w.onTimeDispatch, orderFillRate: w.orderFillRate, onTimeDelivery: t.onTimeDelivery, delayRate: t.delayRate };
+      });
+      await generatePresentation({
+        wms, tms, planning, cross,
+        alerts,
+        breaches: activeBreaches,
+        warehouse: filters.warehouse,
+        dateRange,
+        monthlyTrend: allTrend,
+        warehouseBreakdown,
+      });
+    } finally {
+      setBuildingDeck(false);
+    }
+  };
 
   // Compute active breaches for UI indicators
   const computeBreaches = useCallback((snap: KpiSnapshot) => {
@@ -261,6 +287,15 @@ export default function DashboardPage() {
           <h2 className="text-xl font-bold text-slate-900 mt-0.5">Executive Overview</h2>
           <p className="text-sm text-slate-400 mt-0.5">Cross-system KPIs · WMS + TMS + Planning</p>
         </div>
+        <div className="flex items-center gap-3">
+        <button
+          onClick={handlePresent}
+          disabled={buildingDeck}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl border border-indigo-200 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 transition-all shadow-sm text-white"
+        >
+          <Presentation size={15} className={buildingDeck ? "animate-pulse" : ""} />
+          <span className="text-sm font-medium">{buildingDeck ? "Building deck…" : "Present"}</span>
+        </button>
         <button
           onClick={() => setAlertPanelOpen(true)}
           className="relative flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 bg-white hover:border-indigo-300 hover:bg-indigo-50 transition-all shadow-sm"
@@ -273,6 +308,7 @@ export default function DashboardPage() {
             </span>
           )}
         </button>
+        </div>
       </div>
       <FilterBar filters={DASHBOARD_FILTERS} values={filters} onChange={set} onReset={reset} />
 

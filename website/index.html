@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Supply Chain Intelligence Platform</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --navy:   #0B1F3B;
+    --teal:   #00B3A4;
+    --indigo: #4338CA;
+    --amber:  #F59E0B;
+    --red:    #EF4444;
+    --green:  #10B981;
+    --slate:  #64748B;
+    --light:  #F8FAFC;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--light);
+    color: #1E293B;
+    line-height: 1.6;
+  }
+
+  /* ── NAV ── */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: var(--navy);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 48px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.3);
+  }
+  .nav-brand { display: flex; align-items: center; gap: 10px; }
+  .nav-pulse {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--teal); box-shadow: 0 0 8px var(--teal);
+  }
+  .nav-title { color: #fff; font-weight: 700; font-size: 14px; }
+  .nav-links { display: flex; gap: 26px; }
+  .nav-links a {
+    color: rgba(255,255,255,0.55); text-decoration: none;
+    font-size: 13px; font-weight: 500; transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--teal); }
+  .nav-pill {
+    background: var(--teal); color: var(--navy);
+    font-size: 11px; font-weight: 700;
+    padding: 4px 12px; border-radius: 20px; letter-spacing: .4px;
+  }
+
+  /* ── SECTION SCAFFOLD ── */
+  section { scroll-margin-top: 62px; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 80px 48px; }
+  .section-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 2px; color: var(--teal); margin-bottom: 10px;
+  }
+  .section-chip::before { content:''; display:block; width:18px; height:2px; background:var(--teal); }
+  .section-title {
+    font-size: clamp(24px, 3.2vw, 38px);
+    font-weight: 800; color: #0F172A; line-height: 1.15; margin-bottom: 14px;
+  }
+  .section-sub { color: var(--slate); font-size: 16px; max-width: 600px; margin-bottom: 52px; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    background: linear-gradient(140deg, #0B1F3B 0%, #0d2645 55%, #091828 100%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 120px 48px 80px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse at 25% 55%, rgba(0,179,164,.1) 0%, transparent 55%),
+                radial-gradient(ellipse at 75% 25%, rgba(67,56,202,.08) 0%, transparent 55%);
+  }
+  .hero-chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(0,179,164,.1); border: 1px solid rgba(0,179,164,.28);
+    color: var(--teal); font-size: 11px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    padding: 5px 16px; border-radius: 20px; margin-bottom: 30px; position: relative;
+  }
+  .hero h1 {
+    font-size: clamp(34px, 5vw, 64px);
+    font-weight: 800; color: #fff; line-height: 1.1;
+    max-width: 820px; margin-bottom: 20px; position: relative;
+  }
+  .hero h1 em { color: var(--teal); font-style: normal; }
+  .hero-sub {
+    color: rgba(255,255,255,.52); font-size: clamp(14px, 1.8vw, 18px);
+    max-width: 580px; margin-bottom: 50px; position: relative;
+  }
+  .hero-stats {
+    display: flex; gap: 48px; position: relative;
+    flex-wrap: wrap; justify-content: center; margin-bottom: 52px;
+  }
+  .stat-num { font-size: 38px; font-weight: 800; color: var(--teal); line-height: 1; }
+  .stat-lbl { color: rgba(255,255,255,.45); font-size: 11px; margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+  .hero-layers { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; position: relative; }
+  .hero-layer {
+    background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09);
+    border-radius: 12px; padding: 15px 22px; text-align: center; min-width: 152px;
+    transition: all .3s;
+  }
+  .hero-layer:hover { background: rgba(0,179,164,.09); border-color: rgba(0,179,164,.28); transform: translateY(-3px); }
+  .hero-layer-icon { font-size: 22px; margin-bottom: 5px; }
+  .hero-layer-name { color: #fff; font-weight: 700; font-size: 13px; }
+  .hero-layer-sub  { color: rgba(255,255,255,.4); font-size: 11px; margin-top: 2px; }
+
+  /* ── DATA ── */
+  .data-section { background: #fff; }
+  .data-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+  .data-card { border: 1px solid #E2E8F0; border-radius: 16px; overflow: hidden; transition: all .25s; }
+  .data-card:hover { box-shadow: 0 8px 28px rgba(0,0,0,.09); transform: translateY(-3px); }
+  .data-header { padding: 20px 22px 16px; display: flex; align-items: center; gap: 13px; }
+  .data-icon {
+    width: 46px; height: 46px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .data-name  { font-weight: 700; font-size: 15px; color: #fff; }
+  .data-file  {
+    font-size: 11px; color: rgba(255,255,255,.6);
+    background: rgba(255,255,255,.1); border-radius: 5px;
+    padding: 2px 8px; margin-top: 3px; display: inline-block;
+    font-family: 'Courier New', monospace;
+  }
+  .data-fields { padding: 0 22px 18px; }
+  .fields-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #64748B; margin: 13px 0 8px; }
+  .tag {
+    display: inline-block;
+    background: #F8FAFC; border: 1px solid #E2E8F0;
+    color: #475569; font-size: 11px; font-weight: 500;
+    padding: 3px 9px; border-radius: 6px; margin: 2px 2px 2px 0;
+  }
+  .data-note {
+    margin: 10px 22px 18px;
+    padding: 9px 13px;
+    border-radius: 8px; font-size: 12px; font-weight: 600;
+  }
+
+  /* ── HOW ── */
+  .how-section { background: var(--light); }
+  .steps { display: flex; flex-direction: column; }
+  .step { display: grid; grid-template-columns: 64px 1fr; position: relative; }
+  .step:not(:last-child) .step-line {
+    position: absolute; left: 31px; top: 52px; bottom: 0;
+    width: 2px; background: linear-gradient(to bottom, var(--teal), #E2E8F0);
+  }
+  .step-num-col { display: flex; flex-direction: column; align-items: center; padding-top: 6px; }
+  .step-num {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--navy); color: #fff; font-weight: 800; font-size: 15px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; z-index: 1; box-shadow: 0 0 0 4px rgba(0,179,164,.18);
+  }
+  .step-body { padding: 4px 0 40px 26px; }
+  .step-title { font-size: 17px; font-weight: 700; color: #0F172A; margin-bottom: 5px; }
+  .step-desc  { color: var(--slate); font-size: 14px; max-width: 560px; }
+  .step-tags  { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 11px; }
+  .step-tag {
+    background: #fff; border: 1px solid #CBD5E1;
+    color: #475569; font-size: 11px; font-weight: 600;
+    padding: 3px 10px; border-radius: 7px;
+  }
+  .step-tag.hi { background: rgba(0,179,164,.07); border-color: rgba(0,179,164,.28); color: #0B8A80; }
+
+  /* ── LAYERS ── */
+  .layers-section { background: #fff; }
+  .layers-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; }
+  .layer-card { border-radius: 18px; overflow: hidden; border: 1px solid #E2E8F0; transition: all .3s; }
+  .layer-card:hover { transform: translateY(-4px); box-shadow: 0 14px 42px rgba(0,0,0,.09); }
+  .layer-head { padding: 26px 26px 20px; }
+  .layer-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.3px; padding: 3px 10px; border-radius: 7px; margin-bottom: 12px;
+  }
+  .layer-name { font-size: 20px; font-weight: 800; color: #fff; }
+  .layer-sub  { font-size: 12px; opacity: .65; color: #fff; margin-top: 3px; }
+  .layer-body { padding: 22px 26px; background: #fff; }
+  .kpi-list   { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  .kpi-list li { display: flex; align-items: flex-start; gap: 9px; font-size: 13px; color: #374151; }
+  .kpi-list li::before { content:'→'; font-weight:700; flex-shrink:0; margin-top:1px; }
+  .pages-row { margin-top: 18px; }
+  .pages-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--slate); margin-bottom: 8px; }
+  .page-pill {
+    display: inline-block; font-size: 11px; font-weight: 600;
+    padding: 3px 9px; border-radius: 5px; margin: 2px 2px 0 0;
+  }
+  .ai-row { margin-top: 16px; padding-top: 14px; border-top: 1px solid #F1F5F9; }
+  .ai-row-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--slate); margin-bottom: 8px; }
+  .ai-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 6px; margin: 2px 2px 0 0;
+  }
+
+  /* ── BENEFITS ── */
+  .benefits-section { background: var(--navy); }
+  .benefits-section .section-title { color: #fff; }
+  .benefits-section .section-sub   { color: rgba(255,255,255,.48); }
+  .ben-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; }
+  .ben-card {
+    background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+    border-radius: 15px; padding: 26px; transition: all .3s;
+  }
+  .ben-card:hover { background: rgba(0,179,164,.07); border-color: rgba(0,179,164,.22); transform: translateY(-3px); }
+  .ben-icon {
+    width: 48px; height: 48px; border-radius: 13px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; margin-bottom: 16px;
+  }
+  .ben-title { font-weight: 700; font-size: 15px; color: #fff; margin-bottom: 7px; }
+  .ben-desc  { color: rgba(255,255,255,.48); font-size: 13px; line-height: 1.7; }
+
+  /* ── RESULTS ── */
+  .results-section { background: var(--light); }
+  .res-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 24px; }
+  .res-card {
+    background: #fff; border: 1px solid #E2E8F0;
+    border-radius: 15px; padding: 28px; display: flex; gap: 20px; align-items: flex-start;
+    transition: all .3s;
+  }
+  .res-card:hover { box-shadow: 0 8px 28px rgba(0,0,0,.07); transform: translateY(-2px); }
+  .res-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+  .res-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--slate); margin-bottom: 4px; }
+  .res-title { font-size: 15px; font-weight: 700; color: #0F172A; margin-bottom: 5px; }
+  .res-desc  { font-size: 13px; color: var(--slate); line-height: 1.65; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: #0B1F3B; padding: 36px 48px;
+    text-align: center; color: rgba(255,255,255,.3); font-size: 13px;
+  }
+  .footer-brand { font-size: 17px; font-weight: 800; color: #fff; margin-bottom: 6px; }
+  .footer-brand span { color: var(--teal); }
+
+  /* ── UTIL ── */
+  .info-bar {
+    background: #FFFBEB; border: 1px solid #FDE68A;
+    border-radius: 9px; padding: 11px 16px;
+    display: flex; align-items: flex-start; gap: 10px;
+    margin-top: 28px; font-size: 13px; color: #92400E; font-weight: 500;
+  }
+
+  @media (max-width: 860px) {
+    .data-grid, .layers-grid, .ben-grid { grid-template-columns: 1fr; }
+    .res-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .wrap { padding: 60px 24px; }
+    .hero { padding: 100px 24px 60px; }
+  }
+  @media print { .nav { display: none; } }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="nav-pulse"></div>
+    <span class="nav-title">Supply Chain Intelligence Platform</span>
+  </div>
+  <div class="nav-links">
+    <a href="#data">Data</a>
+    <a href="#how">How to Use</a>
+    <a href="#layers">Layers</a>
+    <a href="#benefits">Benefits</a>
+    <a href="#results">End Result</a>
+  </div>
+  <span class="nav-pill">CONFIDENTIAL</span>
+</nav>
+
+
+<!-- ══════════════════════════════════════
+     HERO
+══════════════════════════════════════ -->
+<section id="hero">
+  <div class="hero">
+    <div class="hero-chip">AI-Powered · Three-Layer Platform</div>
+    <h1>One Platform.<br><em>Complete Supply Chain</em> Visibility.</h1>
+    <p class="hero-sub">
+      A unified intelligence layer across Warehouse, Planning, and Transportation —
+      with live KPIs, automated alerts, drill-down analytics, and AI-powered voice communication.
+    </p>
+
+    <div class="hero-stats">
+      <div>
+        <div class="stat-num">3</div>
+        <div class="stat-lbl">Integrated Layers</div>
+      </div>
+      <div>
+        <div class="stat-num">18</div>
+        <div class="stat-lbl">Tracked KPIs</div>
+      </div>
+      <div>
+        <div class="stat-num">3</div>
+        <div class="stat-lbl">Warehouses</div>
+      </div>
+      <div>
+        <div class="stat-num">AI</div>
+        <div class="stat-lbl">Voice + Chat</div>
+      </div>
+    </div>
+
+    <div class="hero-layers">
+      <div class="hero-layer">
+        <div class="hero-layer-icon">🏭</div>
+        <div class="hero-layer-name">WDE</div>
+        <div class="hero-layer-sub">Warehouse Operations</div>
+      </div>
+      <div class="hero-layer">
+        <div class="hero-layer-icon">📦</div>
+        <div class="hero-layer-name">Planning</div>
+        <div class="hero-layer-sub">Demand &amp; Supply</div>
+      </div>
+      <div class="hero-layer">
+        <div class="hero-layer-icon">🚚</div>
+        <div class="hero-layer-name">TMS</div>
+        <div class="hero-layer-sub">Transportation</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     DATA TO UPLOAD
+══════════════════════════════════════ -->
+<section id="data">
+  <div class="wrap data-section">
+    <div class="section-chip">Data Input</div>
+    <h2 class="section-title">What Data Do You Upload?</h2>
+    <p class="section-sub">
+      Each layer accepts one CSV file. Export it from your existing ERP or operations system —
+      the platform reads it immediately and populates every dashboard, KPI, and alert.
+    </p>
+
+    <div class="data-grid">
+
+      <!-- WDE -->
+      <div class="data-card">
+        <div class="data-header" style="background: linear-gradient(135deg,#0B1F3B,#17365a);">
+          <div class="data-icon" style="background:rgba(0,179,164,.18);">🏭</div>
+          <div>
+            <div class="data-name">Warehouse Data</div>
+            <div class="data-file">WMS_Operations.csv</div>
+          </div>
+        </div>
+        <div class="data-fields">
+          <div class="fields-label">Key Fields</div>
+          <span class="tag">Inbound / Outbound Date</span>
+          <span class="tag">SKU / Product</span>
+          <span class="tag">Warehouse Node</span>
+          <span class="tag">Dock-to-Stock Time</span>
+          <span class="tag">Receiving Accuracy</span>
+          <span class="tag">On-Time Dispatch</span>
+          <span class="tag">Order Pendency</span>
+          <span class="tag">Shift</span>
+          <span class="tag">Flow Type</span>
+          <span class="tag">Risk Band</span>
+        </div>
+        <div class="data-note" style="background:#F0FDF4;color:#166534;">
+          📊 Feeds 6 KPI workspaces across the WDE layer
+        </div>
+      </div>
+
+      <!-- Planning -->
+      <div class="data-card">
+        <div class="data-header" style="background: linear-gradient(135deg,#312E81,#4338CA);">
+          <div class="data-icon" style="background:rgba(99,102,241,.2);">📦</div>
+          <div>
+            <div class="data-name">Planning Data</div>
+            <div class="data-file">planning_demand_supply.csv</div>
+          </div>
+        </div>
+        <div class="data-fields">
+          <div class="fields-label">Key Fields</div>
+          <span class="tag">Month</span>
+          <span class="tag">Warehouse</span>
+          <span class="tag">SKU ID</span>
+          <span class="tag">Category</span>
+          <span class="tag">Supplier</span>
+          <span class="tag">Demand Plan</span>
+          <span class="tag">Actual Demand</span>
+          <span class="tag">Demand Variance %</span>
+          <span class="tag">Stock on Hand</span>
+          <span class="tag">Safety Stock</span>
+          <span class="tag">Reorder Point</span>
+          <span class="tag">PO Number &amp; Qty</span>
+          <span class="tag">PO Date</span>
+          <span class="tag">Expected Receipt Date</span>
+          <span class="tag">PO Status</span>
+          <span class="tag">Days of Cover</span>
+          <span class="tag">Stockout Risk</span>
+          <span class="tag">Inventory Value (₹)</span>
+        </div>
+        <div class="data-note" style="background:#EEF2FF;color:#3730A3;">
+          📊 Feeds Demand, Supply &amp; Control Tower views
+        </div>
+      </div>
+
+      <!-- TMS -->
+      <div class="data-card">
+        <div class="data-header" style="background: linear-gradient(135deg,#064E3B,#0F766E);">
+          <div class="data-icon" style="background:rgba(16,185,129,.18);">🚚</div>
+          <div>
+            <div class="data-name">Transport Data</div>
+            <div class="data-file">TMS_Shipments.csv</div>
+          </div>
+        </div>
+        <div class="data-fields">
+          <div class="fields-label">Key Fields</div>
+          <span class="tag">Shipment ID</span>
+          <span class="tag">Date</span>
+          <span class="tag">Carrier Name</span>
+          <span class="tag">Mode of Transport</span>
+          <span class="tag">Origin City</span>
+          <span class="tag">Destination City</span>
+          <span class="tag">Distance (km)</span>
+          <span class="tag">Weight (kg)</span>
+          <span class="tag">Shipment Cost (USD)</span>
+          <span class="tag">On-Time / Delayed / In-Transit</span>
+          <span class="tag">Transit Time (Days)</span>
+          <span class="tag">Estimated Delivery Date</span>
+          <span class="tag">Actual Delivery Date</span>
+          <span class="tag">Shipment Order Type</span>
+        </div>
+        <div class="data-note" style="background:#ECFDF5;color:#065F46;">
+          📊 Feeds all 6 TMS KPIs, Live Map &amp; Alerts
+        </div>
+      </div>
+
+    </div>
+
+    <div class="info-bar">
+      <span>⚡</span>
+      <span>No technical integration needed. Export your data from any ERP or WMS as CSV, upload via the in-app Upload page, and all dashboards populate instantly. Filters, KPIs, and drill-downs all update from the same file.</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     HOW TO USE
+══════════════════════════════════════ -->
+<section id="how">
+  <div class="wrap how-section">
+    <div class="section-chip">Usage Flow</div>
+    <h2 class="section-title">How Your Team Uses the Platform</h2>
+    <p class="section-sub">
+      A simple daily workflow — from uploading data to making decisions — without switching between tools.
+    </p>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-line"></div>
+        <div class="step-num-col"><div class="step-num">1</div></div>
+        <div class="step-body">
+          <div class="step-title">Log In and Upload Your Data</div>
+          <div class="step-desc">
+            Each layer has a dedicated <strong>Upload</strong> page. Drag and drop your CSV —
+            the platform auto-parses it and loads data across all pages instantly.
+            No manual mapping or configuration required.
+          </div>
+          <div class="step-tags">
+            <span class="step-tag">CSV Upload</span>
+            <span class="step-tag">Auto-parse</span>
+            <span class="step-tag hi">Dashboards update immediately</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line"></div>
+        <div class="step-num-col"><div class="step-num">2</div></div>
+        <div class="step-body">
+          <div class="step-title">Monitor Live KPIs with Filters</div>
+          <div class="step-desc">
+            Every layer has a dashboard showing its KPIs with trend indicators (green / amber / red).
+            Apply filters — by <strong>warehouse</strong> (DEL, MUM, BLR), <strong>category</strong>,
+            <strong>shift</strong>, <strong>date range</strong>, and more — to focus on what matters to your team right now.
+          </div>
+          <div class="step-tags">
+            <span class="step-tag">Warehouse filter</span>
+            <span class="step-tag">Date range</span>
+            <span class="step-tag">Category</span>
+            <span class="step-tag">Shift</span>
+            <span class="step-tag hi">Green / Amber / Red status</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line"></div>
+        <div class="step-num-col"><div class="step-num">3</div></div>
+        <div class="step-body">
+          <div class="step-title">Click a KPI to Drill Into Root Causes</div>
+          <div class="step-desc">
+            Every KPI card and speedometer gauge is clickable.
+            Click any metric to open a <strong>drill-down modal</strong> that shows the top data records
+            driving that number — the specific shipment, SKU, or warehouse entry that is causing the result.
+          </div>
+          <div class="step-tags">
+            <span class="step-tag">Click any KPI</span>
+            <span class="step-tag">Top records displayed</span>
+            <span class="step-tag hi">Ranked by impact</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-line"></div>
+        <div class="step-num-col"><div class="step-num">4</div></div>
+        <div class="step-body">
+          <div class="step-title">Review Automated Alerts</div>
+          <div class="step-desc">
+            When a KPI breaches a threshold, the platform flags it on the dashboard card and
+            on the dedicated <strong>Alerts</strong> page. The Planning <strong>Control Tower</strong>
+            shows a health score for every supply chain node — Supplier, Inbound, Warehouse,
+            Outbound, and Carrier — so nothing is missed.
+          </div>
+          <div class="step-tags">
+            <span class="step-tag">Threshold-based alerts</span>
+            <span class="step-tag">Alerts page</span>
+            <span class="step-tag hi">Control Tower health view</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num-col"><div class="step-num">5</div></div>
+        <div class="step-body">
+          <div class="step-title">Escalate via AI Voice Call or Chat</div>
+          <div class="step-desc">
+            From any screen, tap the floating phone button to reach the right person —
+            Logistics Manager, Transport Manager, Fleet Coordinator, or Carrier Relations Head.
+            The AI places the call, streams a live transcript, and saves it to call history automatically.
+            On the WDE and TMS layers, an <strong>AI chat assistant</strong> is also available to answer
+            operational questions without leaving the screen.
+          </div>
+          <div class="step-tags">
+            <span class="step-tag">Contact picker</span>
+            <span class="step-tag">AI Voice Call</span>
+            <span class="step-tag">Live transcript</span>
+            <span class="step-tag">Call history</span>
+            <span class="step-tag hi">AI Chat (WDE &amp; TMS)</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     PRODUCT LAYERS
+══════════════════════════════════════ -->
+<section id="layers">
+  <div class="wrap layers-section">
+    <div class="section-chip">The Product</div>
+    <h2 class="section-title">Three Layers, One Platform</h2>
+    <p class="section-sub">
+      Each layer is a standalone module with its own KPIs, drill-downs, and AI capabilities,
+      while feeding into a shared Planning view for cross-functional visibility.
+    </p>
+
+    <div class="layers-grid">
+
+      <!-- WDE -->
+      <div class="layer-card">
+        <div class="layer-head" style="background:linear-gradient(135deg,#0B1F3B,#17365a);">
+          <div class="layer-badge" style="background:rgba(0,179,164,.15);color:#00B3A4;border:1px solid rgba(0,179,164,.28);">
+            🏭 Layer 1
+          </div>
+          <div class="layer-name">Warehouse Digital Experience</div>
+          <div class="layer-sub">WDE — Inbound to Outbound Warehouse Operations</div>
+        </div>
+        <div class="layer-body">
+          <ul class="kpi-list">
+            <li><strong>On-Time Dispatch Rate</strong> — % of orders dispatched on schedule</li>
+            <li><strong>Order Fill Rate</strong> — fulfilment completeness against demand</li>
+            <li><strong>Dock-to-Stock Time</strong> — inbound processing speed (hours)</li>
+            <li><strong>Receiving Accuracy</strong> — quality of inbound counts</li>
+            <li><strong>Order Pendency</strong> — backlog volume</li>
+          </ul>
+          <div class="pages-row">
+            <div class="pages-lbl">Pages</div>
+            <span class="page-pill" style="background:#EFF6FF;color:#1D4ED8;">Executive Dashboard</span>
+            <span class="page-pill" style="background:#EFF6FF;color:#1D4ED8;">Inbound Velocity</span>
+            <span class="page-pill" style="background:#EFF6FF;color:#1D4ED8;">Receiving Quality</span>
+            <span class="page-pill" style="background:#EFF6FF;color:#1D4ED8;">Yard Dwell &amp; Throughput</span>
+            <span class="page-pill" style="background:#EFF6FF;color:#1D4ED8;">Fulfillment Accuracy</span>
+            <span class="page-pill" style="background:#EFF6FF;color:#1D4ED8;">Order Cycle Efficiency</span>
+            <span class="page-pill" style="background:#EFF6FF;color:#1D4ED8;">Dispatch Backlog</span>
+            <span class="page-pill" style="background:#EFF6FF;color:#1D4ED8;">Data Upload</span>
+          </div>
+          <div class="ai-row">
+            <div class="ai-row-lbl">AI Features</div>
+            <span class="ai-pill" style="background:#F0FDF4;color:#166534;">💬 AI Copilot Chat</span>
+            <span class="ai-pill" style="background:#EEF2FF;color:#3730A3;">📞 AI Voice Calling</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Planning -->
+      <div class="layer-card">
+        <div class="layer-head" style="background:linear-gradient(135deg,#312E81,#4338CA);">
+          <div class="layer-badge" style="background:rgba(99,102,241,.2);color:#A5B4FC;border:1px solid rgba(99,102,241,.3);">
+            📦 Layer 2
+          </div>
+          <div class="layer-name">Planning Hub</div>
+          <div class="layer-sub">Demand, Supply &amp; Cross-Chain Intelligence</div>
+        </div>
+        <div class="layer-body">
+          <ul class="kpi-list">
+            <li><strong>Total SKUs Tracked</strong> — full portfolio coverage</li>
+            <li><strong>High Stockout Risk Items</strong> — SKUs below safety stock</li>
+            <li><strong>Avg Days of Cover</strong> — inventory runway by warehouse</li>
+            <li><strong>Demand Variance %</strong> — gap between plan and actual demand</li>
+            <li><strong>Inventory Value (₹ Cr)</strong> — working capital position</li>
+            <li><strong>Active Purchase Orders</strong> — open PO count and status</li>
+            <li><strong>Perfect Order Rate</strong> — cross-layer compound performance</li>
+            <li><strong>Supply Chain Cycle Time</strong> — end-to-end time (hours)</li>
+          </ul>
+          <div class="pages-row">
+            <div class="pages-lbl">Pages</div>
+            <span class="page-pill" style="background:#EEF2FF;color:#4338CA;">Overview Dashboard</span>
+            <span class="page-pill" style="background:#EEF2FF;color:#4338CA;">Control Tower</span>
+            <span class="page-pill" style="background:#EEF2FF;color:#4338CA;">Demand Planning</span>
+            <span class="page-pill" style="background:#EEF2FF;color:#4338CA;">Supply Planning</span>
+          </div>
+          <div class="ai-row">
+            <div class="ai-row-lbl">AI Features</div>
+            <span class="ai-pill" style="background:#EEF2FF;color:#3730A3;">📞 AI Voice Calling</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TMS -->
+      <div class="layer-card">
+        <div class="layer-head" style="background:linear-gradient(135deg,#064E3B,#065F46);">
+          <div class="layer-badge" style="background:rgba(16,185,129,.15);color:#6EE7B7;border:1px solid rgba(16,185,129,.28);">
+            🚚 Layer 3
+          </div>
+          <div class="layer-name">Transportation Management</div>
+          <div class="layer-sub">TMS — Carrier, Cost &amp; Delivery Performance</div>
+        </div>
+        <div class="layer-body">
+          <ul class="kpi-list">
+            <li><strong>On-Time Delivery Rate</strong> — shipments delivered on schedule</li>
+            <li><strong>Transit Time Variance</strong> — deviation from planned transit days</li>
+            <li><strong>Freight Cost per Shipment</strong> — average cost per shipment (USD)</li>
+            <li><strong>Cost per Mile</strong> — distance-normalised freight spend</li>
+            <li><strong>Carrier On-Time Performance</strong> — per-carrier delivery rate</li>
+            <li><strong>Tender Acceptance Rate</strong> — carrier capacity commitment rate</li>
+          </ul>
+          <div class="pages-row">
+            <div class="pages-lbl">Pages</div>
+            <span class="page-pill" style="background:#ECFDF5;color:#065F46;">Dashboard</span>
+            <span class="page-pill" style="background:#ECFDF5;color:#065F46;">Cost Management KPIs</span>
+            <span class="page-pill" style="background:#ECFDF5;color:#065F46;">Operational KPIs</span>
+            <span class="page-pill" style="background:#ECFDF5;color:#065F46;">Carrier Performance</span>
+            <span class="page-pill" style="background:#ECFDF5;color:#065F46;">Live Map</span>
+            <span class="page-pill" style="background:#ECFDF5;color:#065F46;">Alerts</span>
+            <span class="page-pill" style="background:#ECFDF5;color:#065F46;">Upload</span>
+          </div>
+          <div class="ai-row">
+            <div class="ai-row-lbl">AI Features</div>
+            <span class="ai-pill" style="background:#F0FDF4;color:#166534;">💬 AI Chat Widget</span>
+            <span class="ai-pill" style="background:#EEF2FF;color:#3730A3;">📞 AI Voice Calling</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     BENEFITS
+══════════════════════════════════════ -->
+<section id="benefits">
+  <div class="wrap benefits-section">
+    <div class="section-chip" style="color:var(--teal);">Why This Platform</div>
+    <h2 class="section-title">Key Benefits</h2>
+    <p class="section-sub">From a single CSV upload to a complete operational picture — without spreadsheets or manual reporting.</p>
+
+    <div class="ben-grid">
+
+      <div class="ben-card">
+        <div class="ben-icon" style="background:rgba(0,179,164,.12);">⚡</div>
+        <div class="ben-title">Instant Visibility on Upload</div>
+        <div class="ben-desc">
+          Upload a CSV and every KPI, chart, alert, and drill-down updates in real time.
+          No manual refresh, no waiting for a report run — the data is live the moment
+          the file is processed.
+        </div>
+      </div>
+
+      <div class="ben-card">
+        <div class="ben-icon" style="background:rgba(99,102,241,.12);">🔍</div>
+        <div class="ben-title">Root-Cause in One Click</div>
+        <div class="ben-desc">
+          Every KPI is drillable. Click a metric and the platform surfaces the specific
+          shipments, SKUs, or warehouse records responsible for that number — ranked by impact.
+          No pivot tables, no separate reports.
+        </div>
+      </div>
+
+      <div class="ben-card">
+        <div class="ben-icon" style="background:rgba(239,68,68,.1);">🚨</div>
+        <div class="ben-title">Automated KPI Alerts</div>
+        <div class="ben-desc">
+          The platform watches every KPI against its target threshold.
+          When a metric crosses into amber or red territory, an alert fires immediately —
+          on the dashboard, on the KPI card, and on the Alerts page.
+        </div>
+      </div>
+
+      <div class="ben-card">
+        <div class="ben-icon" style="background:rgba(16,185,129,.1);">🗺️</div>
+        <div class="ben-title">Cross-Layer Control Tower</div>
+        <div class="ben-desc">
+          The Planning Control Tower gives a single, colour-coded health score for every
+          node in the supply chain — Supplier, Inbound, Warehouse, Outbound, and Carrier —
+          so leadership has one consolidated view across all teams.
+        </div>
+      </div>
+
+      <div class="ben-card">
+        <div class="ben-icon" style="background:rgba(245,158,11,.1);">📞</div>
+        <div class="ben-title">Faster Escalation with AI Voice</div>
+        <div class="ben-desc">
+          When a KPI turns red, the team doesn't need to open email or dial manually.
+          Tap the AI voice widget, pick the right contact, and the call starts immediately.
+          Every call is automatically transcribed and saved for reference.
+        </div>
+      </div>
+
+      <div class="ben-card">
+        <div class="ben-icon" style="background:rgba(67,56,202,.1);">📦</div>
+        <div class="ben-title">Demand &amp; Stockout Visibility</div>
+        <div class="ben-desc">
+          The Demand Planning page shows every SKU's stockout risk level (High / Medium / Low),
+          days of cover, and demand-vs-plan variance by warehouse and category — giving
+          planners a prioritised list to act on before shortages occur.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════
+     END RESULT
+══════════════════════════════════════ -->
+<section id="results">
+  <div class="wrap results-section">
+    <div class="section-chip">End Result</div>
+    <h2 class="section-title">What Your Organisation Gains</h2>
+    <p class="section-sub">
+      The platform brings together data from three operational layers into a single, actionable view
+      — giving every team the information they need to make faster, better-informed decisions.
+    </p>
+
+    <div class="res-grid">
+
+      <div class="res-card">
+        <div class="res-icon" style="background:#ECFDF5;">📊</div>
+        <div>
+          <div class="res-label">Visibility</div>
+          <div class="res-title">One Dashboard Across All Three Operations</div>
+          <div class="res-desc">
+            The Planning Overview aggregates 15 KPIs from Warehouse, Transport, and Planning
+            in a single view. Each team sees the same numbers — warehouse managers,
+            planners, and logistics heads work from one shared source of truth.
+          </div>
+        </div>
+      </div>
+
+      <div class="res-card">
+        <div class="res-icon" style="background:#EEF2FF;">🎯</div>
+        <div>
+          <div class="res-label">Responsiveness</div>
+          <div class="res-title">From Alert to Action Without Leaving the Screen</div>
+          <div class="res-desc">
+            A KPI breaches → an alert fires → the manager drills into the root-cause data →
+            taps the AI voice widget to call the responsible team lead → the call is
+            transcribed and stored. The entire escalation loop happens inside the platform.
+          </div>
+        </div>
+      </div>
+
+      <div class="res-card">
+        <div class="res-icon" style="background:#FFFBEB;">📋</div>
+        <div>
+          <div class="res-label">Accountability</div>
+          <div class="res-title">Every Call Logged, Every Decision on Record</div>
+          <div class="res-desc">
+            AI voice call transcripts are automatically saved with contact name, date,
+            and full message history. The team has a browsable call log within the widget —
+            creating an operational audit trail with no manual documentation effort.
+          </div>
+        </div>
+      </div>
+
+      <div class="res-card">
+        <div class="res-icon" style="background:#FFF1F2;">🛡️</div>
+        <div>
+          <div class="res-label">Risk Reduction</div>
+          <div class="res-title">Stockout and Delivery Risks Visible Before They Escalate</div>
+          <div class="res-desc">
+            The Demand Planning page flags SKUs at High / Medium / Low stockout risk
+            with days of cover remaining. The TMS Alerts page surfaces delayed shipments
+            and carrier underperformance — giving teams lead time to respond.
+          </div>
+        </div>
+      </div>
+
+      <div class="res-card">
+        <div class="res-icon" style="background:#F0FDF4;">💰</div>
+        <div>
+          <div class="res-label">Cost Control</div>
+          <div class="res-title">Freight Spend Tracked at Shipment and Per-Mile Level</div>
+          <div class="res-desc">
+            The TMS Cost Management KPI page tracks Freight Cost per Shipment and
+            Cost per Mile in real time. Clicking either KPI shows the most expensive
+            shipments in the uploaded data — giving procurement the data to act on.
+          </div>
+        </div>
+      </div>
+
+      <div class="res-card">
+        <div class="res-icon" style="background:#F5F3FF;">🏗️</div>
+        <div>
+          <div class="res-label">Alignment</div>
+          <div class="res-title">Warehouse, Planning, and Logistics on the Same Page</div>
+          <div class="res-desc">
+            The Control Tower gives leadership a live, colour-coded health score for
+            every supply chain node. Cross-layer KPIs — Perfect Order Rate and
+            Supply Chain Cycle Time — show how the three teams are performing together,
+            not just individually.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">Supply Chain <span>Intelligence</span> Platform</div>
+  <p>Confidential — prepared for client review &nbsp;·&nbsp; 2026</p>
+  <p style="margin-top:5px;font-size:11px;opacity:.5;">
+    WDE &nbsp;·&nbsp; Planning Hub &nbsp;·&nbsp; TMS &nbsp;|&nbsp;
+    18 KPIs &nbsp;·&nbsp; Drill-Downs &nbsp;·&nbsp; AI Voice + Chat &nbsp;·&nbsp; Alerts &nbsp;·&nbsp; Control Tower &nbsp;·&nbsp; Live Map
+  </p>
+</footer>
+
+</body>
+</html>

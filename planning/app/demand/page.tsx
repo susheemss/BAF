@@ -55,9 +55,10 @@ export default function DemandPage() {
   const [loading,  setLoading]  = useState(true);
   const [error,    setError]    = useState("");
   const [drilldown, setDrilldown] = useState<TableDrilldown | null>(null);
+  const [visibleCount, setVisibleCount] = useState(5);
 
-  const set   = (id: string, val: string) => setFilters((f) => ({ ...f, [id]: val }));
-  const reset = () => setFilters(DEFAULT_FILTERS);
+  const set   = (id: string, val: string) => { setFilters((f) => ({ ...f, [id]: val })); setVisibleCount(5); };
+  const reset = () => { setFilters(DEFAULT_FILTERS); setVisibleCount(5); };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -193,53 +194,67 @@ export default function DemandPage() {
             <div className="flex items-center gap-2 mb-4">
               <PackageSearch size={15} className="text-indigo-400" />
               <p className="text-sm font-semibold text-slate-800">SKU Stockout Risk Tracker</p>
-              <span className="ml-auto text-xs text-slate-400">{skuRisks.length} SKUs shown</span>
+              <span className="ml-auto text-xs text-slate-400">
+                {Math.min(visibleCount, skuRisks.length)} of {skuRisks.length} SKUs
+              </span>
             </div>
             {skuRisks.length === 0 ? (
               <p className="py-8 text-center text-sm text-slate-400">No SKUs match the current filters</p>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-slate-100">
-                      {["SKU", "Category", "WH", "Stock on Hand", "Demand Plan", "Days of Cover", "Variance", "Risk"].map((h) => (
-                        <th key={h} className="text-left text-[11px] uppercase tracking-wide text-slate-400 font-semibold pb-3 pr-4">{h}</th>
+              <>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-100">
+                        {["SKU", "Category", "WH", "Stock on Hand", "Demand Plan", "Days of Cover", "Variance", "Risk"].map((h) => (
+                          <th key={h} className="text-left text-[11px] uppercase tracking-wide text-slate-400 font-semibold pb-3 pr-4">{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {skuRisks.slice(0, visibleCount).map((row, i) => (
+                        <motion.tr key={`${row.sku}-${row.warehouse}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.02 }}
+                          className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                          <td className="py-3 pr-4 text-xs font-mono text-slate-500">{row.sku}</td>
+                          <td className="py-3 pr-4 text-xs text-slate-500">{row.category}</td>
+                          <td className="py-3 pr-4">
+                            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">{row.warehouse}</span>
+                          </td>
+                          <td className="py-3 pr-4 text-slate-700">{row.stockOnHand.toLocaleString()}</td>
+                          <td className="py-3 pr-4 text-slate-700">{row.demandPlan.toLocaleString()}</td>
+                          <td className="py-3 pr-4">
+                            <span className={`font-bold ${row.daysOfCover < 7 ? "text-red-600" : row.daysOfCover < 14 ? "text-amber-600" : "text-emerald-600"}`}>
+                              {row.daysOfCover}d
+                            </span>
+                          </td>
+                          <td className="py-3 pr-4">
+                            <span className={`text-xs font-medium ${row.variance > 0 ? "text-red-500" : "text-emerald-500"}`}>
+                              {row.variance > 0 ? "+" : ""}{row.variance}%
+                            </span>
+                          </td>
+                          <td className="py-3">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold"
+                              style={{ background: RISK_COLORS[row.risk] + "20", color: RISK_COLORS[row.risk] }}>
+                              {row.risk === "Low" ? <CheckCircle2 size={10} /> : <AlertTriangle size={10} />}
+                              {row.risk}
+                            </span>
+                          </td>
+                        </motion.tr>
                       ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {skuRisks.map((row, i) => (
-                      <motion.tr key={`${row.sku}-${row.warehouse}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.02 }}
-                        className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
-                        <td className="py-3 pr-4 text-xs font-mono text-slate-500">{row.sku}</td>
-                        <td className="py-3 pr-4 text-xs text-slate-500">{row.category}</td>
-                        <td className="py-3 pr-4">
-                          <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">{row.warehouse}</span>
-                        </td>
-                        <td className="py-3 pr-4 text-slate-700">{row.stockOnHand.toLocaleString()}</td>
-                        <td className="py-3 pr-4 text-slate-700">{row.demandPlan.toLocaleString()}</td>
-                        <td className="py-3 pr-4">
-                          <span className={`font-bold ${row.daysOfCover < 7 ? "text-red-600" : row.daysOfCover < 14 ? "text-amber-600" : "text-emerald-600"}`}>
-                            {row.daysOfCover}d
-                          </span>
-                        </td>
-                        <td className="py-3 pr-4">
-                          <span className={`text-xs font-medium ${row.variance > 0 ? "text-red-500" : "text-emerald-500"}`}>
-                            {row.variance > 0 ? "+" : ""}{row.variance}%
-                          </span>
-                        </td>
-                        <td className="py-3">
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold"
-                            style={{ background: RISK_COLORS[row.risk] + "20", color: RISK_COLORS[row.risk] }}>
-                            {row.risk === "Low" ? <CheckCircle2 size={10} /> : <AlertTriangle size={10} />}
-                            {row.risk}
-                          </span>
-                        </td>
-                      </motion.tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </tbody>
+                  </table>
+                </div>
+                {visibleCount < skuRisks.length && (
+                  <div className="mt-4 flex items-center justify-center">
+                    <button
+                      onClick={() => setVisibleCount((c) => c + 5)}
+                      className="text-xs text-indigo-600 border border-indigo-200 hover:bg-indigo-50 px-4 py-2 rounded-lg transition-colors"
+                    >
+                      Load more ({skuRisks.length - visibleCount} remaining)
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </>

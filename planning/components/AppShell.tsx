@@ -11,8 +11,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <Header />
         <main className="flex-1 p-6">{children}</main>
       </div>
-      <VapiWidget />
-      <DataChatWidget />
+      <div data-snapshot-ignore="true"><VapiWidget /></div>
+      <div data-snapshot-ignore="true"><DataChatWidget /></div>
     </div>
   );
 }
