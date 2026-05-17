@@ -242,6 +242,13 @@ function TmsUpload() {
       const records = await parseFile(file);
       // Persist to localStorage so TMS pages pick it up automatically
       localStorage.setItem("tmss_shipments", JSON.stringify(records));
+      const response = await fetch("/api/data/tms/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ records }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || "Failed to save TMS data for chatbot.");
       setState({ status: "success", message: "TMS data loaded —", rows: records.length, filename: file.name });
     } catch (err: any) {
       setState({ status: "error", message: err.message || "Parse failed." });

@@ -1,0 +1,34 @@
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Operations Desk Dashboard Notes</title>
+</head>
+<body>
+  <h1>Operations Desk Dashboard</h1>
+  <h2>Purpose</h2>
+  <p>
+    The Operations Desk dashboard provides a compact operating view of the incident and ticket backlog
+    across planning and execution teams. It shows what is open, who owns it, how long items have been
+    active, where escalation pressure is building, and how quickly issues are being closed.
+  </p>
+
+  <h2>What The Dashboard Shows</h2>
+  <ul>
+    <li>Open Tickets, Escalations, Average Open Age, Average ETA, and Closed Items provide the top-line operating signal.</li>
+    <li>Open and Closed Trend shows monthly intake, monthly closure, and the remaining open backlog.</li>
+    <li>Issue Type Mix highlights where the current backlog is concentrated by category.</li>
+    <li>Risk Snapshot isolates items that are blocked, aging, or critical.</li>
+    <li>Open Incidents by Assignee shows workload concentration and average ticket age by owner.</li>
+    <li>Backlog by Team shows open load and escalation pressure across NTT, o9, Anaplan, and Relex.</li>
+    <li>Open Ticket Queue provides the working list with owner, status, priority, age, ETA, and latest update.</li>
+  </ul>
+
+  <h2>Key Highlights</h2>
+  <ul>
+    <li>The page is designed for daily operational review, not deep reporting.</li>
+    <li>The layout keeps the most important questions visible first: how much is open, where risk is concentrated, who owns the work, and how quickly the backlog is moving.</li>
+    <li>The queue is sorted priority-first so critical and older items stay visible.</li>
+    <li>Current content uses seeded sample tickets and can later be connected to uploaded files or a ticket API.</li>
+  </ul>
+</body>
+</html>

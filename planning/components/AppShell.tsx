@@ -1,6 +1,7 @@
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import VapiWidget from "./VapiWidget";
+import DataChatWidget from "./DataChatWidget";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
@@ -11,6 +12,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <main className="flex-1 p-6">{children}</main>
       </div>
       <VapiWidget />
+      <DataChatWidget />
     </div>
   );
 }

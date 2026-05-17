@@ -10,6 +10,7 @@ import {
   DollarSign,
   Gauge,
   LayoutDashboard,
+  ListChecks,
   Map,
   Radio,
   TrendingUp,
@@ -25,6 +26,7 @@ import {
 const NAV = [
   { href: "/dashboard",     label: "Overview",         icon: LayoutDashboard },
   { href: "/control-tower", label: "Resilient CT",      icon: Radio },
+  { href: "/operations-desk", label: "Operations Desk", icon: ListChecks },
   { href: "/demand",        label: "Demand Planning",  icon: TrendingUp },
   { href: "/supply",        label: "Supply Planning",  icon: PackageSearch },
   { href: "/data",          label: "Data Hub",         icon: Database },

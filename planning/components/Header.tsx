@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 const LABELS: Record<string, string> = {
   "/dashboard":     "Overview",
   "/control-tower": "Control Tower",
+  "/operations-desk": "Operations Desk",
   "/demand":        "Demand Planning",
   "/supply":        "Supply Planning",
 };
