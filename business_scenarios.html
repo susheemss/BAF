@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HUL Demo — The 9:30 AM Call</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--navy:#0A1F3D;--teal:#00B4A2;--green:#059669;--amber:#D97706;--red:#DC2626;}
+html,body{height:100%;overflow:hidden;background:var(--navy);}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#fff;display:flex;flex-direction:column;}
+
+/* ── HEADER ── */
+header{
+  background:#071628;border-bottom:1px solid rgba(255,255,255,.08);
+  padding:0 32px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.logo{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--teal);}
+.scenario-title{font-size:13px;font-weight:600;color:rgba(255,255,255,.5);}
+.step-counter{font-size:12px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:1px;}
+
+/* ── STEP TRACK ── */
+.track{
+  background:#071628;border-bottom:1px solid rgba(255,255,255,.06);
+  padding:0 32px;height:56px;display:flex;align-items:center;gap:0;flex-shrink:0;
+}
+.step-item{
+  display:flex;align-items:center;gap:0;flex:1;cursor:pointer;
+}
+.step-item:last-child .step-line{display:none;}
+.step-dot-wrap{display:flex;flex-direction:column;align-items:center;gap:5px;padding:0 12px 0 0;flex-shrink:0;}
+.step-dot{
+  width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;color:rgba(255,255,255,.3);
+  transition:all .25s;flex-shrink:0;
+}
+.step-dot.done{background:rgba(0,180,162,.2);border-color:var(--teal);color:var(--teal);}
+.step-dot.active{background:var(--teal);border-color:var(--teal);color:#fff;box-shadow:0 0 0 4px rgba(0,180,162,.2);}
+.step-label{font-size:11px;font-weight:600;color:rgba(255,255,255,.25);white-space:nowrap;transition:color .25s;}
+.step-label.active{color:#fff;}
+.step-label.done{color:var(--teal);}
+.step-line{flex:1;height:1px;background:rgba(255,255,255,.08);margin:0 8px;margin-top:-14px;}
+.step-line.done{background:var(--teal);}
+
+/* ── STAGE ── */
+.stage{flex:1;position:relative;overflow:hidden;}
+.panel{position:absolute;inset:0;display:none;padding:28px 40px;flex-direction:column;gap:20px;}
+.panel.active{display:flex;}
+
+/* ── BOTTOM NAV ── */
+.bottom{
+  background:#071628;border-top:1px solid rgba(255,255,255,.06);
+  padding:0 32px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.btn{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  border-radius:8px;padding:8px 20px;font-size:12px;font-weight:700;
+  color:rgba(255,255,255,.6);cursor:pointer;transition:all .15s;
+}
+.btn:hover{background:rgba(255,255,255,.12);color:#fff;}
+.btn:disabled{opacity:.2;cursor:default;}
+.btn.primary{background:var(--teal);border-color:var(--teal);color:#fff;}
+.btn.primary:hover{background:#00c9b4;}
+.progress-text{font-size:11px;color:rgba(255,255,255,.3);letter-spacing:1px;}
+
+/* ════════════════════════════════
+   STEP 1 — The Silos
+════════════════════════════════ */
+.step1-grid{
+  display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;
+  gap:14px;flex:1;
+}
+.silo{
+  border-radius:14px;padding:18px 20px;
+  display:flex;flex-direction:column;gap:10px;
+  border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);
+  position:relative;overflow:hidden;
+}
+.silo::after{content:"";position:absolute;inset:0;border-radius:14px;pointer-events:none;}
+.silo-tag{display:flex;align-items:center;gap:8px;}
+.silo-name{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:4px;}
+.sn-o9{background:rgba(245,158,11,.2);color:#FCD34D;}
+.sn-ana{background:rgba(14,165,233,.2);color:#7DD3FC;}
+.sn-rel{background:rgba(34,197,94,.2);color:#86EFAC;}
+.sn-tms{background:rgba(168,85,247,.2);color:#D8B4FE;}
+.silo-system{font-size:10px;color:rgba(255,255,255,.35);}
+.silo-metric{font-size:32px;font-weight:900;line-height:1;}
+.silo-metric.amber{color:#FDE68A;}.silo-metric.red{color:#FCA5A5;}
+.silo-desc{font-size:12px;color:rgba(255,255,255,.55);line-height:1.4;}
+.silo-verdict{
+  margin-top:auto;display:inline-flex;align-items:center;gap:6px;
+  background:rgba(5,150,105,.15);border:1px solid rgba(5,150,105,.3);
+  border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;color:#6EE7B7;align-self:flex-start;
+}
+.silo-verdict.warn{background:rgba(217,119,6,.15);border-color:rgba(217,119,6,.3);color:#FDE68A;}
+
+.step1-caption{
+  text-align:center;font-size:13px;color:rgba(255,255,255,.4);
+  padding:10px;border-top:1px solid rgba(255,255,255,.06);flex-shrink:0;
+}
+.step1-caption strong{color:#fff;}
+
+/* ════════════════════════════════
+   STEP 2 — Platform view
+════════════════════════════════ */
+.step2-wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px;flex:1;align-items:stretch;}
+.step2-left{display:flex;flex-direction:column;gap:12px;}
+.step2-right{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:16px;}
+
+.section-label{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px;}
+
+.signal-row{
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:14px;
+}
+.signal-row.alert-red{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.07);}
+.signal-row.alert-amber{border-color:rgba(217,119,6,.4);background:rgba(217,119,6,.07);}
+.sr-sys{font-size:10px;font-weight:800;padding:2px 8px;border-radius:4px;flex-shrink:0;}
+.sr-body{flex:1;}
+.sr-num{font-size:22px;font-weight:900;line-height:1;}
+.sr-num.r{color:#FCA5A5;}.sr-num.a{color:#FDE68A;}
+.sr-lbl{font-size:11px;color:rgba(255,255,255,.5);margin-top:1px;}
+.sr-badge{font-size:10px;font-weight:800;padding:3px 8px;border-radius:4px;flex-shrink:0;}
+.badge-red{background:rgba(220,38,38,.3);color:#FCA5A5;}
+.badge-amber{background:rgba(217,119,6,.3);color:#FDE68A;}
+
+.insight-card{
+  background:linear-gradient(135deg,rgba(0,180,162,.15),rgba(0,180,162,.05));
+  border:2px solid rgba(0,180,162,.4);border-radius:16px;padding:28px;
+  width:100%;
+}
+.ic-label{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:12px;}
+.ic-text{font-size:28px;font-weight:900;color:#fff;line-height:1.2;}
+.ic-sub{font-size:13px;color:rgba(255,255,255,.5);margin-top:10px;line-height:1.5;}
+
+/* ════════════════════════════════
+   STEP 3 — The Connection
+════════════════════════════════ */
+.step3-wrap{display:flex;align-items:center;justify-content:center;gap:0;flex:1;}
+.nodes-left{display:flex;flex-direction:column;gap:12px;width:220px;}
+.node{
+  border-radius:12px;padding:12px 16px;
+  display:flex;flex-direction:column;gap:4px;
+  border:1px solid;
+}
+.node.o9{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.4);}
+.node.ana{background:rgba(14,165,233,.1);border-color:rgba(14,165,233,.4);}
+.node.rel{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.4);}
+.node.tms{background:rgba(168,85,247,.1);border-color:rgba(168,85,247,.4);}
+.node-sys{font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;opacity:.7;}
+.node-val{font-size:22px;font-weight:900;line-height:1;}
+.node.o9 .node-val,.node.ana .node-val{color:#FDE68A;}
+.node.tms .node-val{color:#FCA5A5;}
+.node.rel .node-val{color:#FDE68A;}
+.node-lbl{font-size:11px;color:rgba(255,255,255,.55);}
+.node-effect{font-size:11px;font-weight:700;color:rgba(255,255,255,.7);font-style:italic;}
+
+.arrows-col{display:flex;flex-direction:column;gap:12px;width:80px;align-items:center;justify-content:center;padding:0 8px;}
+.arrow-seg{flex:1;display:flex;align-items:center;justify-content:center;font-size:22px;color:rgba(255,255,255,.2);}
+
+.risk-center{
+  width:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  background:rgba(220,38,38,.12);border:2px solid rgba(220,38,38,.5);border-radius:20px;padding:24px 16px;gap:10px;
+}
+.risk-icon{font-size:36px;}
+.risk-label{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(220,38,38,.8);}
+.risk-val{font-size:28px;font-weight:900;color:#FCA5A5;line-height:1;}
+.risk-sub{font-size:11px;color:rgba(255,255,255,.4);line-height:1.4;}
+
+.arrows-right{width:60px;display:flex;align-items:center;justify-content:center;font-size:28px;color:rgba(255,255,255,.2);}
+
+.hul-outcome{
+  width:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;
+}
+.hul-icon{font-size:48px;}
+.hul-text{font-size:14px;font-weight:700;color:rgba(255,255,255,.7);line-height:1.5;}
+.hul-text strong{color:#fff;display:block;font-size:16px;margin-bottom:4px;}
+
+/* ════════════════════════════════
+   STEP 4 — The Call
+════════════════════════════════ */
+.step4-wrap{display:grid;grid-template-columns:1fr 1fr;gap:24px;flex:1;align-items:stretch;}
+.call-left{display:flex;flex-direction:column;gap:14px;}
+.call-right{display:flex;flex-direction:column;gap:14px;}
+
+.call-card{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;padding:18px 20px;
+}
+.call-time{font-size:11px;font-weight:800;letter-spacing:1px;color:var(--teal);margin-bottom:8px;}
+.call-persons{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.person{display:flex;align-items:center;gap:8px;}
+.person-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;}
+.av-our{background:rgba(0,180,162,.2);border:1px solid rgba(0,180,162,.5);color:var(--teal);}
+.av-hul{background:rgba(37,99,235,.2);border:1px solid rgba(37,99,235,.5);color:#93C5FD;}
+.person-name{font-size:12px;font-weight:700;color:#fff;}
+.person-role{font-size:10px;color:rgba(255,255,255,.4);}
+.call-arrow{font-size:18px;color:rgba(255,255,255,.2);flex:1;text-align:center;}
+
+.script-box{
+  background:#071628;border-radius:10px;padding:16px 18px;
+  border-left:3px solid var(--teal);
+  font-size:13px;color:rgba(255,255,255,.8);line-height:1.7;font-style:italic;
+}
+.script-box strong{color:#fff;font-style:normal;}
+
+.findings-list{display:flex;flex-direction:column;gap:8px;}
+.finding-item{
+  display:flex;align-items:flex-start;gap:10px;
+  background:rgba(255,255,255,.04);border-radius:8px;padding:10px 13px;
+  font-size:12px;color:rgba(255,255,255,.75);line-height:1.4;
+}
+.fi-sys{font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;flex-shrink:0;margin-top:1px;}
+
+.rec-list{display:flex;flex-direction:column;gap:8px;}
+.rec-item{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(0,180,162,.08);border:1px solid rgba(0,180,162,.2);
+  border-radius:8px;padding:10px 14px;
+  font-size:12px;font-weight:600;color:rgba(255,255,255,.8);
+}
+.rec-icon{font-size:16px;flex-shrink:0;}
+
+/* ════════════════════════════════
+   STEP 5 — The Outcome
+════════════════════════════════ */
+.step5-wrap{display:flex;flex-direction:column;gap:16px;flex:1;}
+.metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.metric-card{
+  border-radius:14px;padding:20px;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+}
+.mc-teal{background:rgba(0,180,162,.12);border:1px solid rgba(0,180,162,.3);}
+.mc-green{background:rgba(5,150,105,.12);border:1px solid rgba(5,150,105,.3);}
+.mc-amber{background:rgba(217,119,6,.12);border:1px solid rgba(217,119,6,.3);}
+.mc-navy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);}
+.mc-num{font-size:36px;font-weight:900;line-height:1;}
+.mc-teal .mc-num{color:var(--teal);}
+.mc-green .mc-num{color:#6EE7B7;}
+.mc-amber .mc-num{color:#FDE68A;}
+.mc-navy .mc-num{color:#fff;}
+.mc-label{font-size:12px;color:rgba(255,255,255,.5);line-height:1.4;}
+
+.outcome-bottom{display:grid;grid-template-columns:1fr 1fr;gap:14px;flex:1;}
+.quote-card{
+  background:#071628;border-radius:14px;padding:22px 24px;
+  border-left:4px solid var(--teal);display:flex;flex-direction:column;justify-content:center;gap:12px;
+}
+.quote-text{font-size:15px;color:rgba(255,255,255,.85);line-height:1.65;font-style:italic;}
+.quote-by{font-size:11px;color:rgba(255,255,255,.35);}
+
+.shift-card{
+  background:#071628;border-radius:14px;padding:22px 24px;
+  display:flex;flex-direction:column;gap:12px;
+}
+.shift-title{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);}
+.shift-row{display:flex;align-items:center;gap:12px;}
+.shift-before,.shift-after{flex:1;border-radius:10px;padding:12px 14px;text-align:center;}
+.shift-before{background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.3);}
+.shift-after{background:rgba(5,150,105,.1);border:1px solid rgba(5,150,105,.3);}
+.sh-label{font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;}
+.shift-before .sh-label{color:rgba(220,38,38,.8);}
+.shift-after .sh-label{color:rgba(5,150,105,.8);}
+.sh-text{font-size:12px;font-weight:600;color:rgba(255,255,255,.8);line-height:1.4;}
+.shift-arrow{font-size:20px;color:rgba(255,255,255,.2);}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">HUL Demo &nbsp;·&nbsp; 2025</div>
+  <div class="scenario-title">Scenario: The 9:30 AM Call — Catching a Stockout HUL Didn't Know Was Coming</div>
+  <div class="step-counter" id="stepCounter">Step 1 of 5</div>
+</header>
+
+<!-- STEP TRACK -->
+<div class="track">
+  <div class="step-item" onclick="go(0)">
+    <div class="step-dot-wrap">
+      <div class="step-dot active" id="dot0">1</div>
+      <div class="step-label active" id="lbl0">The Blind Spots</div>
+    </div>
+    <div class="step-line" id="line0"></div>
+  </div>
+  <div class="step-item" onclick="go(1)">
+    <div class="step-dot-wrap">
+      <div class="step-dot" id="dot1">2</div>
+      <div class="step-label" id="lbl1">Our Platform View</div>
+    </div>
+    <div class="step-line" id="line1"></div>
+  </div>
+  <div class="step-item" onclick="go(2)">
+    <div class="step-dot-wrap">
+      <div class="step-dot" id="dot2">3</div>
+      <div class="step-label" id="lbl2">Connecting the Dots</div>
+    </div>
+    <div class="step-line" id="line2"></div>
+  </div>
+  <div class="step-item" onclick="go(3)">
+    <div class="step-dot-wrap">
+      <div class="step-dot" id="dot3">4</div>
+      <div class="step-label" id="lbl3">The 9:30 AM Call</div>
+    </div>
+    <div class="step-line" id="line3"></div>
+  </div>
+  <div class="step-item" onclick="go(4)">
+    <div class="step-dot-wrap">
+      <div class="step-dot" id="dot4">5</div>
+      <div class="step-label" id="lbl4">The Outcome</div>
+    </div>
+    <div class="step-line" id="line4" style="display:none;"></div>
+  </div>
+</div>
+
+<!-- STAGE -->
+<div class="stage">
+
+  <!-- ═══ STEP 1: The Blind Spots ═══ -->
+  <div class="panel active" id="p0">
+    <div class="step1-grid">
+      <div class="silo">
+        <div class="silo-tag">
+          <div class="silo-name sn-o9">o9</div>
+          <div class="silo-system">Demand Planning</div>
+        </div>
+        <div class="silo-metric amber">+12%</div>
+        <div class="silo-desc">Personal Care demand running above plan in Delhi this week</div>
+        <div class="silo-verdict warn">⚠ Noted internally</div>
+      </div>
+
+      <div class="silo">
+        <div class="silo-tag">
+          <div class="silo-name sn-ana">Anaplan</div>
+          <div class="silo-system">Supply Planning</div>
+        </div>
+        <div class="silo-metric amber">6 days</div>
+        <div class="silo-desc">Replenishment PO delayed — supplier confirmation pending</div>
+        <div class="silo-verdict warn">⚠ Tracking internally</div>
+      </div>
+
+      <div class="silo">
+        <div class="silo-tag">
+          <div class="silo-name sn-rel">Relex</div>
+          <div class="silo-system">Warehouse (WMS)</div>
+        </div>
+        <div class="silo-metric amber">4.1 days</div>
+        <div class="silo-desc">Delhi warehouse stock cover — within acceptable range</div>
+        <div class="silo-verdict">✓ Within tolerance</div>
+      </div>
+
+      <div class="silo">
+        <div class="silo-tag">
+          <div class="silo-name sn-tms">TMS</div>
+          <div class="silo-system">Transport</div>
+        </div>
+        <div class="silo-metric red">71.2%</div>
+        <div class="silo-desc">Blue Dart OTD on DEL→MUM route — flagged as carrier issue</div>
+        <div class="silo-verdict warn">⚠ Carrier issue logged</div>
+      </div>
+    </div>
+    <div class="step1-caption">
+      Tuesday 9:00 AM — HUL's four systems each show <strong>one piece</strong> of the picture. Each looks manageable alone. <strong>Nobody at HUL connects them.</strong>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 2: Platform View ═══ -->
+  <div class="panel" id="p1">
+    <div class="step2-wrap">
+      <div class="step2-left">
+        <div class="section-label">Our Analyst Opens the Platform — 9:05 AM</div>
+        <div class="signal-row alert-amber">
+          <div class="sr-sys sn-o9">o9</div>
+          <div class="sr-body">
+            <div class="sr-num a">+12%</div>
+            <div class="sr-lbl">Personal Care demand vs. plan · Delhi · stock burning faster</div>
+          </div>
+          <div class="sr-badge badge-amber">Watch</div>
+        </div>
+        <div class="signal-row alert-amber">
+          <div class="sr-sys sn-ana">Anaplan</div>
+          <div class="sr-body">
+            <div class="sr-num a">6 days</div>
+            <div class="sr-lbl">Replenishment PO delayed · no supplier confirmation</div>
+          </div>
+          <div class="sr-badge badge-amber">Delayed</div>
+        </div>
+        <div class="signal-row alert-amber">
+          <div class="sr-sys sn-rel">Relex</div>
+          <div class="sr-body">
+            <div class="sr-num a">4.1 days</div>
+            <div class="sr-lbl">Delhi stock cover · depleting at accelerated rate</div>
+          </div>
+          <div class="sr-badge badge-amber">↓ Falling</div>
+        </div>
+        <div class="signal-row alert-red">
+          <div class="sr-sys sn-tms">TMS</div>
+          <div class="sr-body">
+            <div class="sr-num r">71.2%</div>
+            <div class="sr-lbl">DEL→MUM OTD · Blue Dart · emergency transfer unreliable</div>
+          </div>
+          <div class="sr-badge badge-red">Critical</div>
+        </div>
+      </div>
+      <div class="step2-right">
+        <div class="insight-card">
+          <div class="ic-label">What Our Analyst Sees</div>
+          <div class="ic-text">Four signals.<br/>One risk.</div>
+          <div class="ic-sub">No single system raised a critical alert.<br/>But together — across o9, Anaplan, Relex, and TMS — the picture is clear.<br/><br/>This is what our platform was built to see.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 3: Connecting the Dots ═══ -->
+  <div class="panel" id="p2">
+    <div class="step3-wrap">
+      <div class="nodes-left">
+        <div class="node o9">
+          <div class="node-sys">o9 — Demand</div>
+          <div class="node-val">+12%</div>
+          <div class="node-lbl">Demand vs. plan</div>
+          <div class="node-effect">→ Stock burning faster than forecast</div>
+        </div>
+        <div class="node ana">
+          <div class="node-sys">Anaplan — Supply</div>
+          <div class="node-val">6 days</div>
+          <div class="node-lbl">PO delayed</div>
+          <div class="node-effect">→ Replenishment won't arrive in time</div>
+        </div>
+        <div class="node rel">
+          <div class="node-sys">Relex — Warehouse</div>
+          <div class="node-val">4.1 days</div>
+          <div class="node-lbl">Stock cover</div>
+          <div class="node-effect">→ Will hit zero in 7 days</div>
+        </div>
+        <div class="node tms">
+          <div class="node-sys">TMS — Transport</div>
+          <div class="node-val">71.2%</div>
+          <div class="node-lbl">DEL→MUM OTD</div>
+          <div class="node-effect">→ Emergency transfer unreliable</div>
+        </div>
+      </div>
+
+      <div class="arrows-col">
+        <div class="arrow-seg">→</div>
+        <div class="arrow-seg">→</div>
+        <div class="arrow-seg">→</div>
+        <div class="arrow-seg">→</div>
+      </div>
+
+      <div class="risk-center">
+        <div class="risk-icon">⚠️</div>
+        <div class="risk-label">Combined Risk</div>
+        <div class="risk-val">Stockout</div>
+        <div class="risk-sub">in 7 days<br/>on Personal Care SKUs<br/>Delhi warehouse</div>
+      </div>
+
+      <div class="arrows-right">→</div>
+
+      <div class="hul-outcome">
+        <div class="hul-icon">🏢</div>
+        <div class="hul-text">
+          <strong>HUL doesn't know this yet</strong>
+          Their four teams each see their own fragment. No one is seeing all four together.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 4: The Call ═══ -->
+  <div class="panel" id="p3">
+    <div class="step4-wrap">
+      <div class="call-left">
+        <div class="call-card">
+          <div class="call-time">9:30 AM — 90 minutes before HUL's internal S&OP</div>
+          <div class="call-persons">
+            <div class="person">
+              <div class="person-av av-our">PM</div>
+              <div>
+                <div class="person-name">Priya Mehta</div>
+                <div class="person-role">Our Senior SC Consultant · HUL Account</div>
+              </div>
+            </div>
+            <div class="call-arrow">📞</div>
+            <div class="person">
+              <div class="person-av av-hul">RS</div>
+              <div>
+                <div class="person-name">Rajesh Sharma</div>
+                <div class="person-role">HUL Supply Chain Director</div>
+              </div>
+            </div>
+          </div>
+          <div class="script-box">
+            "Rajesh, I need 3 minutes before your S&OP. Our platform is showing a <strong>stockout risk on Personal Care SKUs in Delhi — within 7 days.</strong> Your four systems are each showing a small flag, but together they're telling a different story. I want to walk you through it and give you our recommendation before you go in."
+          </div>
+        </div>
+
+        <div class="call-card">
+          <div class="section-label" style="margin-bottom:10px;">What We Share — Cross-System Picture</div>
+          <div class="findings-list">
+            <div class="finding-item"><div class="fi-sys sn-o9">o9</div>Demand running +12% vs. plan — stock burning faster than Relex was calibrated for</div>
+            <div class="finding-item"><div class="fi-sys sn-ana">Anaplan</div>Replenishment PO delayed 6 days — won't land before stock hits zero</div>
+            <div class="finding-item"><div class="fi-sys sn-tms">TMS</div>Blue Dart DEL→MUM at 71% OTD — emergency stock transfer not viable as backup</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="call-right">
+        <div class="call-card" style="flex:1;display:flex;flex-direction:column;gap:14px;">
+          <div class="section-label">Our Recommendations — Given Live on the Call</div>
+          <div class="rec-list">
+            <div class="rec-item"><div class="rec-icon">⚡</div>Expedite the delayed Anaplan PO — contact supplier directly today</div>
+            <div class="rec-item"><div class="rec-icon">📦</div>Pre-position 15 days of safety stock from Mumbai warehouse to Delhi — before stock drops below 2 days</div>
+            <div class="rec-item"><div class="rec-icon">🚚</div>Temporarily shift DEL→MUM transfers to DTDC — Blue Dart unreliable on this lane this week</div>
+          </div>
+          <div style="margin-top:auto;background:rgba(0,180,162,.08);border:1px solid rgba(0,180,162,.2);border-radius:10px;padding:14px 16px;">
+            <div class="section-label" style="margin-bottom:6px;">Rajesh's Response</div>
+            <div style="font-size:13px;color:rgba(255,255,255,.8);font-style:italic;line-height:1.6;">"None of my team flagged this. Send me a written brief — I'm sharing it in the S&OP in 90 minutes."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STEP 5: The Outcome ═══ -->
+  <div class="panel" id="p4">
+    <div class="step5-wrap">
+      <div class="metrics-row">
+        <div class="metric-card mc-teal">
+          <div class="mc-num">7 days</div>
+          <div class="mc-label">Advance warning before the stockout</div>
+        </div>
+        <div class="metric-card mc-green">
+          <div class="mc-num">0</div>
+          <div class="mc-label">Lost sales days — stockout averted entirely</div>
+        </div>
+        <div class="metric-card mc-amber">
+          <div class="mc-num">4 → 1</div>
+          <div class="mc-label">Systems consolidated into one decision</div>
+        </div>
+        <div class="metric-card mc-navy">
+          <div class="mc-num">90 min</div>
+          <div class="mc-label">Before HUL's S&OP — they walked in prepared</div>
+        </div>
+      </div>
+
+      <div class="outcome-bottom">
+        <div class="quote-card">
+          <div class="quote-text">"Priya's team called us before we knew there was a problem. They had the cross-system picture, the recommendation, and the brief — before our own S&OP started. We didn't lose a single day of sales."</div>
+          <div class="quote-by">— Rajesh Sharma, HUL Supply Chain Director (3 days later)</div>
+        </div>
+
+        <div class="shift-card">
+          <div class="shift-title">How HUL Now Thinks About Our Contract</div>
+          <div class="shift-row">
+            <div class="shift-before">
+              <div class="sh-label">Before</div>
+              <div class="sh-text">"They respond well to our tickets and meet their SLAs"</div>
+            </div>
+            <div class="shift-arrow">→</div>
+            <div class="shift-after">
+              <div class="sh-label">After</div>
+              <div class="sh-text">"They see things our own systems can't — and they call us first"</div>
+            </div>
+          </div>
+          <div style="margin-top:auto;background:rgba(0,180,162,.08);border-radius:8px;padding:12px 14px;font-size:12px;color:rgba(255,255,255,.6);line-height:1.5;">
+            <strong style="color:#fff;display:block;margin-bottom:3px;">The contract shift</strong>
+            From "break-fix support measured by response time" → "strategic intelligence partner measured by stockouts prevented"
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /stage -->
+
+<!-- BOTTOM NAV -->
+<div class="bottom">
+  <button class="btn" id="prevBtn" onclick="go(cur-1)" disabled>← Back</button>
+  <div class="progress-text" id="progressText">Step 1 of 5</div>
+  <button class="btn primary" id="nextBtn" onclick="go(cur+1)">Next →</button>
+</div>
+
+<script>
+let cur = 0;
+const TOTAL = 5;
+
+function go(i) {
+  if (i < 0 || i >= TOTAL) return;
+  cur = i;
+
+  // panels
+  document.querySelectorAll('.panel').forEach((p, idx) => p.classList.toggle('active', idx === i));
+
+  // dots & labels
+  for (let j = 0; j < TOTAL; j++) {
+    const dot = document.getElementById('dot' + j);
+    const lbl = document.getElementById('lbl' + j);
+    const line = document.getElementById('line' + j);
+    dot.className = 'step-dot' + (j < i ? ' done' : j === i ? ' active' : '');
+    dot.textContent = j < i ? '✓' : j + 1;
+    lbl.className = 'step-label' + (j < i ? ' done' : j === i ? ' active' : '');
+    if (line) line.className = 'step-line' + (j < i ? ' done' : '');
+  }
+
+  // nav
+  document.getElementById('prevBtn').disabled = i === 0;
+  document.getElementById('nextBtn').textContent = i === TOTAL - 1 ? 'Restart ↺' : 'Next →';
+  document.getElementById('nextBtn').onclick = i === TOTAL - 1 ? () => go(0) : () => go(cur + 1);
+  document.getElementById('progressText').textContent = 'Step ' + (i + 1) + ' of ' + TOTAL;
+  document.getElementById('stepCounter').textContent = 'Step ' + (i + 1) + ' of ' + TOTAL;
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') go(cur + 1);
+  if (e.key === 'ArrowLeft') go(cur - 1);
+});
+</script>
+</body>
+</html>
