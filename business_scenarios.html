@@ -7,264 +7,242 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{--navy:#0A1F3D;--teal:#00B4A2;--green:#059669;--amber:#D97706;--red:#DC2626;}
-html,body{height:100%;overflow:hidden;background:var(--navy);}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#fff;display:flex;flex-direction:column;}
+html,body{height:100%;overflow:hidden;background:#fff;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#1A2B4A;display:flex;flex-direction:column;}
 
 /* ── HEADER ── */
 header{
-  background:#071628;border-bottom:1px solid rgba(255,255,255,.08);
+  background:#fff;border-bottom:1px solid #E2E8F0;
   padding:0 32px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
 }
 .logo{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--teal);}
-.scenario-title{font-size:13px;font-weight:600;color:rgba(255,255,255,.5);}
-.step-counter{font-size:12px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:1px;}
+.scenario-title{font-size:13px;font-weight:600;color:#5A7A99;}
+.step-counter{font-size:12px;font-weight:700;color:#94A3B8;letter-spacing:1px;}
 
 /* ── STEP TRACK ── */
 .track{
-  background:#071628;border-bottom:1px solid rgba(255,255,255,.06);
+  background:#F8FAFC;border-bottom:1px solid #E2E8F0;
   padding:0 32px;height:56px;display:flex;align-items:center;gap:0;flex-shrink:0;
 }
-.step-item{
-  display:flex;align-items:center;gap:0;flex:1;cursor:pointer;
-}
+.step-item{display:flex;align-items:center;gap:0;flex:1;cursor:pointer;}
 .step-item:last-child .step-line{display:none;}
 .step-dot-wrap{display:flex;flex-direction:column;align-items:center;gap:5px;padding:0 12px 0 0;flex-shrink:0;}
 .step-dot{
-  width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.15);
+  width:28px;height:28px;border-radius:50%;border:2px solid #D1D9E6;
   display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:800;color:rgba(255,255,255,.3);
+  font-size:11px;font-weight:800;color:#94A3B8;
   transition:all .25s;flex-shrink:0;
 }
-.step-dot.done{background:rgba(0,180,162,.2);border-color:var(--teal);color:var(--teal);}
-.step-dot.active{background:var(--teal);border-color:var(--teal);color:#fff;box-shadow:0 0 0 4px rgba(0,180,162,.2);}
-.step-label{font-size:11px;font-weight:600;color:rgba(255,255,255,.25);white-space:nowrap;transition:color .25s;}
-.step-label.active{color:#fff;}
+.step-dot.done{background:rgba(0,180,162,.12);border-color:var(--teal);color:var(--teal);}
+.step-dot.active{background:var(--teal);border-color:var(--teal);color:#fff;box-shadow:0 0 0 4px rgba(0,180,162,.15);}
+.step-label{font-size:11px;font-weight:600;color:#94A3B8;white-space:nowrap;transition:color .25s;}
+.step-label.active{color:var(--navy);}
 .step-label.done{color:var(--teal);}
-.step-line{flex:1;height:1px;background:rgba(255,255,255,.08);margin:0 8px;margin-top:-14px;}
+.step-line{flex:1;height:1px;background:#E2E8F0;margin:0 8px;margin-top:-14px;}
 .step-line.done{background:var(--teal);}
 
 /* ── STAGE ── */
 .stage{flex:1;position:relative;overflow:hidden;}
-.panel{position:absolute;inset:0;display:none;padding:28px 40px;flex-direction:column;gap:20px;}
+.panel{position:absolute;inset:0;display:none;padding:24px 36px;flex-direction:column;gap:16px;}
 .panel.active{display:flex;}
 
 /* ── BOTTOM NAV ── */
 .bottom{
-  background:#071628;border-top:1px solid rgba(255,255,255,.06);
+  background:#fff;border-top:1px solid #E2E8F0;
   padding:0 32px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
 }
 .btn{
   display:flex;align-items:center;gap:8px;
-  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  background:#F1F5F9;border:1px solid #D1D9E6;
   border-radius:8px;padding:8px 20px;font-size:12px;font-weight:700;
-  color:rgba(255,255,255,.6);cursor:pointer;transition:all .15s;
+  color:#5A7A99;cursor:pointer;transition:all .15s;
 }
-.btn:hover{background:rgba(255,255,255,.12);color:#fff;}
-.btn:disabled{opacity:.2;cursor:default;}
+.btn:hover{background:#E2E8F0;color:var(--navy);}
+.btn:disabled{opacity:.3;cursor:default;}
 .btn.primary{background:var(--teal);border-color:var(--teal);color:#fff;}
 .btn.primary:hover{background:#00c9b4;}
-.progress-text{font-size:11px;color:rgba(255,255,255,.3);letter-spacing:1px;}
+.progress-text{font-size:11px;color:#94A3B8;letter-spacing:1px;}
+
+/* ── SYSTEM PILLS (readable on white) ── */
+.sn-kinexis,.sr-sys.sn-kinexis,.fi-sys.sn-kinexis{background:rgba(245,158,11,.15);color:#92400E;}
+.sn-ana,.sr-sys.sn-ana,.fi-sys.sn-ana{background:rgba(14,165,233,.15);color:#1E40AF;}
+.sn-sap,.sr-sys.sn-sap,.fi-sys.sn-sap{background:rgba(34,197,94,.15);color:#14532D;}
+.sn-tms,.sr-sys.sn-tms,.fi-sys.sn-tms{background:rgba(168,85,247,.15);color:#4C1D95;}
 
 /* ════════════════════════════════
    STEP 1 — The Silos
 ════════════════════════════════ */
 .step1-grid{
   display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;
-  gap:14px;flex:1;
+  gap:12px;flex:1;
 }
 .silo{
   border-radius:14px;padding:18px 20px;
   display:flex;flex-direction:column;gap:10px;
-  border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);
-  position:relative;overflow:hidden;
+  border:1px solid #E2E8F0;background:#F8FAFC;
 }
-.silo::after{content:"";position:absolute;inset:0;border-radius:14px;pointer-events:none;}
 .silo-tag{display:flex;align-items:center;gap:8px;}
 .silo-name{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:4px;}
-.sn-o9{background:rgba(245,158,11,.2);color:#FCD34D;}
-.sn-ana{background:rgba(14,165,233,.2);color:#7DD3FC;}
-.sn-rel{background:rgba(34,197,94,.2);color:#86EFAC;}
-.sn-tms{background:rgba(168,85,247,.2);color:#D8B4FE;}
-.silo-system{font-size:10px;color:rgba(255,255,255,.35);}
+.silo-system{font-size:10px;color:#7A9ABB;}
 .silo-metric{font-size:32px;font-weight:900;line-height:1;}
-.silo-metric.amber{color:#FDE68A;}.silo-metric.red{color:#FCA5A5;}
-.silo-desc{font-size:12px;color:rgba(255,255,255,.55);line-height:1.4;}
+.silo-metric.amber{color:var(--amber);}
+.silo-metric.red{color:var(--red);}
+.silo-desc{font-size:12px;color:#5A7A99;line-height:1.4;}
 .silo-verdict{
   margin-top:auto;display:inline-flex;align-items:center;gap:6px;
-  background:rgba(5,150,105,.15);border:1px solid rgba(5,150,105,.3);
-  border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;color:#6EE7B7;align-self:flex-start;
+  background:rgba(5,150,105,.1);border:1px solid rgba(5,150,105,.3);
+  border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;color:var(--green);align-self:flex-start;
 }
-.silo-verdict.warn{background:rgba(217,119,6,.15);border-color:rgba(217,119,6,.3);color:#FDE68A;}
-
+.silo-verdict.warn{background:rgba(217,119,6,.1);border-color:rgba(217,119,6,.3);color:var(--amber);}
 .step1-caption{
-  text-align:center;font-size:13px;color:rgba(255,255,255,.4);
-  padding:10px;border-top:1px solid rgba(255,255,255,.06);flex-shrink:0;
+  text-align:center;font-size:13px;color:#7A9ABB;
+  padding:10px;border-top:1px solid #E2E8F0;flex-shrink:0;
 }
-.step1-caption strong{color:#fff;}
+.step1-caption strong{color:var(--navy);}
 
 /* ════════════════════════════════
    STEP 2 — Platform view
 ════════════════════════════════ */
 .step2-wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px;flex:1;align-items:stretch;}
-.step2-left{display:flex;flex-direction:column;gap:12px;}
+.step2-left{display:flex;flex-direction:column;gap:10px;}
 .step2-right{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:16px;}
-
-.section-label{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:4px;}
-
+.section-label{font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#94A3B8;margin-bottom:4px;}
 .signal-row{
-  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  background:#F8FAFC;border:1px solid #E2E8F0;
   border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:14px;
 }
-.signal-row.alert-red{border-color:rgba(220,38,38,.4);background:rgba(220,38,38,.07);}
-.signal-row.alert-amber{border-color:rgba(217,119,6,.4);background:rgba(217,119,6,.07);}
+.signal-row.alert-red{border-color:rgba(220,38,38,.3);background:#FEF2F2;}
+.signal-row.alert-amber{border-color:rgba(217,119,6,.3);background:#FFFBEB;}
 .sr-sys{font-size:10px;font-weight:800;padding:2px 8px;border-radius:4px;flex-shrink:0;}
 .sr-body{flex:1;}
 .sr-num{font-size:22px;font-weight:900;line-height:1;}
-.sr-num.r{color:#FCA5A5;}.sr-num.a{color:#FDE68A;}
-.sr-lbl{font-size:11px;color:rgba(255,255,255,.5);margin-top:1px;}
+.sr-num.r{color:var(--red);}
+.sr-num.a{color:var(--amber);}
+.sr-lbl{font-size:11px;color:#5A7A99;margin-top:1px;}
 .sr-badge{font-size:10px;font-weight:800;padding:3px 8px;border-radius:4px;flex-shrink:0;}
-.badge-red{background:rgba(220,38,38,.3);color:#FCA5A5;}
-.badge-amber{background:rgba(217,119,6,.3);color:#FDE68A;}
-
+.badge-red{background:#FEE2E2;color:var(--red);}
+.badge-amber{background:#FEF3C7;color:var(--amber);}
 .insight-card{
-  background:linear-gradient(135deg,rgba(0,180,162,.15),rgba(0,180,162,.05));
-  border:2px solid rgba(0,180,162,.4);border-radius:16px;padding:28px;
-  width:100%;
+  background:linear-gradient(135deg,#E6FAF8,#F0FDFB);
+  border:2px solid rgba(0,180,162,.4);border-radius:16px;padding:28px;width:100%;
 }
 .ic-label{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:12px;}
-.ic-text{font-size:28px;font-weight:900;color:#fff;line-height:1.2;}
-.ic-sub{font-size:13px;color:rgba(255,255,255,.5);margin-top:10px;line-height:1.5;}
+.ic-text{font-size:28px;font-weight:900;color:var(--navy);line-height:1.2;}
+.ic-sub{font-size:13px;color:#5A7A99;margin-top:10px;line-height:1.5;}
 
 /* ════════════════════════════════
    STEP 3 — The Connection
 ════════════════════════════════ */
 .step3-wrap{display:flex;align-items:center;justify-content:center;gap:0;flex:1;}
-.nodes-left{display:flex;flex-direction:column;gap:12px;width:220px;}
-.node{
-  border-radius:12px;padding:12px 16px;
-  display:flex;flex-direction:column;gap:4px;
-  border:1px solid;
-}
-.node.o9{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.4);}
-.node.ana{background:rgba(14,165,233,.1);border-color:rgba(14,165,233,.4);}
-.node.rel{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.4);}
-.node.tms{background:rgba(168,85,247,.1);border-color:rgba(168,85,247,.4);}
-.node-sys{font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;opacity:.7;}
+.nodes-left{display:flex;flex-direction:column;gap:10px;width:220px;}
+.node{border-radius:12px;padding:12px 16px;display:flex;flex-direction:column;gap:4px;border:1px solid;}
+.node.kinexis{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.4);}
+.node.ana{background:rgba(14,165,233,.08);border-color:rgba(14,165,233,.4);}
+.node.sap{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.4);}
+.node.tms{background:rgba(168,85,247,.08);border-color:rgba(168,85,247,.4);}
+.node-sys{font-size:10px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#5A7A99;}
 .node-val{font-size:22px;font-weight:900;line-height:1;}
-.node.o9 .node-val,.node.ana .node-val{color:#FDE68A;}
-.node.tms .node-val{color:#FCA5A5;}
-.node.rel .node-val{color:#FDE68A;}
-.node-lbl{font-size:11px;color:rgba(255,255,255,.55);}
-.node-effect{font-size:11px;font-weight:700;color:rgba(255,255,255,.7);font-style:italic;}
-
-.arrows-col{display:flex;flex-direction:column;gap:12px;width:80px;align-items:center;justify-content:center;padding:0 8px;}
-.arrow-seg{flex:1;display:flex;align-items:center;justify-content:center;font-size:22px;color:rgba(255,255,255,.2);}
-
+.node.kinexis .node-val,.node.ana .node-val,.node.sap .node-val{color:var(--amber);}
+.node.tms .node-val{color:var(--red);}
+.node-lbl{font-size:11px;color:#7A9ABB;}
+.node-effect{font-size:11px;font-weight:700;color:#334E6F;font-style:italic;}
+.arrows-col{display:flex;flex-direction:column;gap:10px;width:80px;align-items:center;justify-content:center;padding:0 8px;}
+.arrow-seg{flex:1;display:flex;align-items:center;justify-content:center;font-size:22px;color:#CBD5E1;}
 .risk-center{
   width:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
-  background:rgba(220,38,38,.12);border:2px solid rgba(220,38,38,.5);border-radius:20px;padding:24px 16px;gap:10px;
+  background:#FEF2F2;border:2px solid rgba(220,38,38,.4);border-radius:20px;padding:24px 16px;gap:10px;
 }
 .risk-icon{font-size:36px;}
-.risk-label{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(220,38,38,.8);}
-.risk-val{font-size:28px;font-weight:900;color:#FCA5A5;line-height:1;}
-.risk-sub{font-size:11px;color:rgba(255,255,255,.4);line-height:1.4;}
-
-.arrows-right{width:60px;display:flex;align-items:center;justify-content:center;font-size:28px;color:rgba(255,255,255,.2);}
-
-.hul-outcome{
-  width:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;
-}
+.risk-label{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--red);}
+.risk-val{font-size:28px;font-weight:900;color:var(--red);line-height:1;}
+.risk-sub{font-size:11px;color:#7A9ABB;line-height:1.4;}
+.arrows-right{width:60px;display:flex;align-items:center;justify-content:center;font-size:28px;color:#CBD5E1;}
+.hul-outcome{width:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;}
 .hul-icon{font-size:48px;}
-.hul-text{font-size:14px;font-weight:700;color:rgba(255,255,255,.7);line-height:1.5;}
-.hul-text strong{color:#fff;display:block;font-size:16px;margin-bottom:4px;}
+.hul-text{font-size:14px;font-weight:700;color:#5A7A99;line-height:1.5;}
+.hul-text strong{color:var(--navy);display:block;font-size:16px;margin-bottom:4px;}
 
 /* ════════════════════════════════
    STEP 4 — The Call
 ════════════════════════════════ */
-.step4-wrap{display:grid;grid-template-columns:1fr 1fr;gap:24px;flex:1;align-items:stretch;}
-.call-left{display:flex;flex-direction:column;gap:14px;}
-.call-right{display:flex;flex-direction:column;gap:14px;}
-
+.step4-wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px;flex:1;align-items:stretch;}
+.call-left{display:flex;flex-direction:column;gap:12px;}
+.call-right{display:flex;flex-direction:column;gap:12px;}
 .call-card{
-  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
-  border-radius:14px;padding:18px 20px;
+  background:#F8FAFC;border:1px solid #E2E8F0;
+  border-radius:14px;padding:16px 18px;
 }
 .call-time{font-size:11px;font-weight:800;letter-spacing:1px;color:var(--teal);margin-bottom:8px;}
 .call-persons{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
 .person{display:flex;align-items:center;gap:8px;}
 .person-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;}
-.av-our{background:rgba(0,180,162,.2);border:1px solid rgba(0,180,162,.5);color:var(--teal);}
-.av-hul{background:rgba(37,99,235,.2);border:1px solid rgba(37,99,235,.5);color:#93C5FD;}
-.person-name{font-size:12px;font-weight:700;color:#fff;}
-.person-role{font-size:10px;color:rgba(255,255,255,.4);}
-.call-arrow{font-size:18px;color:rgba(255,255,255,.2);flex:1;text-align:center;}
-
+.av-our{background:rgba(0,180,162,.15);border:1px solid rgba(0,180,162,.4);color:var(--teal);}
+.av-hul{background:rgba(37,99,235,.15);border:1px solid rgba(37,99,235,.4);color:#2563EB;}
+.person-name{font-size:12px;font-weight:700;color:var(--navy);}
+.person-role{font-size:10px;color:#7A9ABB;}
+.call-arrow{font-size:18px;color:#CBD5E1;flex:1;text-align:center;}
 .script-box{
-  background:#071628;border-radius:10px;padding:16px 18px;
+  background:#fff;border:1px solid #E2E8F0;border-radius:10px;padding:14px 16px;
   border-left:3px solid var(--teal);
-  font-size:13px;color:rgba(255,255,255,.8);line-height:1.7;font-style:italic;
+  font-size:13px;color:#334E6F;line-height:1.7;font-style:italic;
 }
-.script-box strong{color:#fff;font-style:normal;}
-
+.script-box strong{color:var(--navy);font-style:normal;}
 .findings-list{display:flex;flex-direction:column;gap:8px;}
 .finding-item{
   display:flex;align-items:flex-start;gap:10px;
-  background:rgba(255,255,255,.04);border-radius:8px;padding:10px 13px;
-  font-size:12px;color:rgba(255,255,255,.75);line-height:1.4;
+  background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:10px 13px;
+  font-size:12px;color:#334E6F;line-height:1.4;
 }
 .fi-sys{font-size:9px;font-weight:800;padding:2px 7px;border-radius:4px;flex-shrink:0;margin-top:1px;}
-
 .rec-list{display:flex;flex-direction:column;gap:8px;}
 .rec-item{
   display:flex;align-items:center;gap:10px;
-  background:rgba(0,180,162,.08);border:1px solid rgba(0,180,162,.2);
+  background:#E6FAF8;border:1px solid rgba(0,180,162,.3);
   border-radius:8px;padding:10px 14px;
-  font-size:12px;font-weight:600;color:rgba(255,255,255,.8);
+  font-size:12px;font-weight:600;color:#134E4A;
 }
 .rec-icon{font-size:16px;flex-shrink:0;}
 
 /* ════════════════════════════════
    STEP 5 — The Outcome
 ════════════════════════════════ */
-.step5-wrap{display:flex;flex-direction:column;gap:16px;flex:1;}
-.metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.step5-wrap{display:flex;flex-direction:column;gap:14px;flex:1;}
+.metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
 .metric-card{
-  border-radius:14px;padding:20px;text-align:center;
+  border-radius:14px;padding:18px;text-align:center;
   display:flex;flex-direction:column;align-items:center;gap:6px;
 }
-.mc-teal{background:rgba(0,180,162,.12);border:1px solid rgba(0,180,162,.3);}
-.mc-green{background:rgba(5,150,105,.12);border:1px solid rgba(5,150,105,.3);}
-.mc-amber{background:rgba(217,119,6,.12);border:1px solid rgba(217,119,6,.3);}
-.mc-navy{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);}
-.mc-num{font-size:36px;font-weight:900;line-height:1;}
+.mc-teal{background:rgba(0,180,162,.1);border:1px solid rgba(0,180,162,.3);}
+.mc-green{background:rgba(5,150,105,.1);border:1px solid rgba(5,150,105,.3);}
+.mc-amber{background:rgba(217,119,6,.1);border:1px solid rgba(217,119,6,.3);}
+.mc-navy{background:#F8FAFC;border:1px solid #E2E8F0;}
+.mc-num{font-size:34px;font-weight:900;line-height:1;}
 .mc-teal .mc-num{color:var(--teal);}
-.mc-green .mc-num{color:#6EE7B7;}
-.mc-amber .mc-num{color:#FDE68A;}
-.mc-navy .mc-num{color:#fff;}
-.mc-label{font-size:12px;color:rgba(255,255,255,.5);line-height:1.4;}
-
-.outcome-bottom{display:grid;grid-template-columns:1fr 1fr;gap:14px;flex:1;}
+.mc-green .mc-num{color:var(--green);}
+.mc-amber .mc-num{color:var(--amber);}
+.mc-navy .mc-num{color:var(--navy);}
+.mc-label{font-size:12px;color:#5A7A99;line-height:1.4;}
+.outcome-bottom{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;}
 .quote-card{
-  background:#071628;border-radius:14px;padding:22px 24px;
+  background:#F8FAFC;border:1px solid #E2E8F0;border-radius:14px;padding:20px 22px;
   border-left:4px solid var(--teal);display:flex;flex-direction:column;justify-content:center;gap:12px;
 }
-.quote-text{font-size:15px;color:rgba(255,255,255,.85);line-height:1.65;font-style:italic;}
-.quote-by{font-size:11px;color:rgba(255,255,255,.35);}
-
+.quote-text{font-size:14px;color:#334E6F;line-height:1.7;font-style:italic;}
+.quote-by{font-size:11px;color:#94A3B8;}
 .shift-card{
-  background:#071628;border-radius:14px;padding:22px 24px;
+  background:#F8FAFC;border:1px solid #E2E8F0;border-radius:14px;padding:20px 22px;
   display:flex;flex-direction:column;gap:12px;
 }
-.shift-title{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);}
+.shift-title{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#94A3B8;}
 .shift-row{display:flex;align-items:center;gap:12px;}
 .shift-before,.shift-after{flex:1;border-radius:10px;padding:12px 14px;text-align:center;}
-.shift-before{background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.3);}
-.shift-after{background:rgba(5,150,105,.1);border:1px solid rgba(5,150,105,.3);}
+.shift-before{background:#FEF2F2;border:1px solid rgba(220,38,38,.25);}
+.shift-after{background:#F0FDF4;border:1px solid rgba(5,150,105,.25);}
 .sh-label{font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;}
-.shift-before .sh-label{color:rgba(220,38,38,.8);}
-.shift-after .sh-label{color:rgba(5,150,105,.8);}
-.sh-text{font-size:12px;font-weight:600;color:rgba(255,255,255,.8);line-height:1.4;}
-.shift-arrow{font-size:20px;color:rgba(255,255,255,.2);}
+.shift-before .sh-label{color:var(--red);}
+.shift-after .sh-label{color:var(--green);}
+.sh-text{font-size:12px;font-weight:600;color:#334E6F;line-height:1.4;}
+.shift-arrow{font-size:20px;color:#CBD5E1;}
 </style>
 </head>
 <body>
@@ -323,7 +301,7 @@ header{
     <div class="step1-grid">
       <div class="silo">
         <div class="silo-tag">
-          <div class="silo-name sn-o9">o9</div>
+          <div class="silo-name sn-kinexis">Kinexis</div>
           <div class="silo-system">Demand Planning</div>
         </div>
         <div class="silo-metric amber">+12%</div>
@@ -343,8 +321,8 @@ header{
 
       <div class="silo">
         <div class="silo-tag">
-          <div class="silo-name sn-rel">Relex</div>
-          <div class="silo-system">Warehouse (WMS)</div>
+          <div class="silo-name sn-sap">SAP</div>
+          <div class="silo-system">Blue Yonder</div>
         </div>
         <div class="silo-metric amber">4.1 days</div>
         <div class="silo-desc">Delhi warehouse stock cover — within acceptable range</div>
@@ -372,7 +350,7 @@ header{
       <div class="step2-left">
         <div class="section-label">Our Analyst Opens the Platform — 9:05 AM</div>
         <div class="signal-row alert-amber">
-          <div class="sr-sys sn-o9">o9</div>
+          <div class="sr-sys sn-kinexis">Kinexis</div>
           <div class="sr-body">
             <div class="sr-num a">+12%</div>
             <div class="sr-lbl">Personal Care demand vs. plan · Delhi · stock burning faster</div>
@@ -388,7 +366,7 @@ header{
           <div class="sr-badge badge-amber">Delayed</div>
         </div>
         <div class="signal-row alert-amber">
-          <div class="sr-sys sn-rel">Relex</div>
+          <div class="sr-sys sn-sap">SAP · Blue Yonder</div>
           <div class="sr-body">
             <div class="sr-num a">4.1 days</div>
             <div class="sr-lbl">Delhi stock cover · depleting at accelerated rate</div>
@@ -408,7 +386,7 @@ header{
         <div class="insight-card">
           <div class="ic-label">What Our Analyst Sees</div>
           <div class="ic-text">Four signals.<br/>One risk.</div>
-          <div class="ic-sub">No single system raised a critical alert.<br/>But together — across o9, Anaplan, Relex, and TMS — the picture is clear.<br/><br/>This is what our platform was built to see.</div>
+          <div class="ic-sub">No single system raised a critical alert.<br/>But together — across Kinexis, Anaplan, SAP (Blue Yonder), and TMS — the picture is clear.<br/><br/>This is what our platform was built to see.</div>
         </div>
       </div>
     </div>
@@ -418,8 +396,8 @@ header{
   <div class="panel" id="p2">
     <div class="step3-wrap">
       <div class="nodes-left">
-        <div class="node o9">
-          <div class="node-sys">o9 — Demand</div>
+        <div class="node kinexis">
+          <div class="node-sys">Kinexis — Demand</div>
           <div class="node-val">+12%</div>
           <div class="node-lbl">Demand vs. plan</div>
           <div class="node-effect">→ Stock burning faster than forecast</div>
@@ -430,8 +408,8 @@ header{
           <div class="node-lbl">PO delayed</div>
           <div class="node-effect">→ Replenishment won't arrive in time</div>
         </div>
-        <div class="node rel">
-          <div class="node-sys">Relex — Warehouse</div>
+        <div class="node sap">
+          <div class="node-sys">SAP — Blue Yonder</div>
           <div class="node-val">4.1 days</div>
           <div class="node-lbl">Stock cover</div>
           <div class="node-effect">→ Will hit zero in 7 days</div>
@@ -501,7 +479,7 @@ header{
         <div class="call-card">
           <div class="section-label" style="margin-bottom:10px;">What We Share — Cross-System Picture</div>
           <div class="findings-list">
-            <div class="finding-item"><div class="fi-sys sn-o9">o9</div>Demand running +12% vs. plan — stock burning faster than Relex was calibrated for</div>
+            <div class="finding-item"><div class="fi-sys sn-kinexis">Kinexis</div>Demand running +12% vs. plan — stock burning faster than SAP Blue Yonder was calibrated for</div>
             <div class="finding-item"><div class="fi-sys sn-ana">Anaplan</div>Replenishment PO delayed 6 days — won't land before stock hits zero</div>
             <div class="finding-item"><div class="fi-sys sn-tms">TMS</div>Blue Dart DEL→MUM at 71% OTD — emergency stock transfer not viable as backup</div>
           </div>
@@ -509,16 +487,16 @@ header{
       </div>
 
       <div class="call-right">
-        <div class="call-card" style="flex:1;display:flex;flex-direction:column;gap:14px;">
+        <div class="call-card" style="flex:1;display:flex;flex-direction:column;gap:12px;">
           <div class="section-label">Our Recommendations — Given Live on the Call</div>
           <div class="rec-list">
             <div class="rec-item"><div class="rec-icon">⚡</div>Expedite the delayed Anaplan PO — contact supplier directly today</div>
-            <div class="rec-item"><div class="rec-icon">📦</div>Pre-position 15 days of safety stock from Mumbai warehouse to Delhi — before stock drops below 2 days</div>
+            <div class="rec-item"><div class="rec-icon">📦</div>Pre-position 15 days of safety stock from Mumbai to Delhi — before stock drops below 2 days</div>
             <div class="rec-item"><div class="rec-icon">🚚</div>Temporarily shift DEL→MUM transfers to DTDC — Blue Dart unreliable on this lane this week</div>
           </div>
-          <div style="margin-top:auto;background:rgba(0,180,162,.08);border:1px solid rgba(0,180,162,.2);border-radius:10px;padding:14px 16px;">
+          <div style="margin-top:auto;background:#E6FAF8;border:1px solid rgba(0,180,162,.3);border-radius:10px;padding:14px 16px;">
             <div class="section-label" style="margin-bottom:6px;">Rajesh's Response</div>
-            <div style="font-size:13px;color:rgba(255,255,255,.8);font-style:italic;line-height:1.6;">"None of my team flagged this. Send me a written brief — I'm sharing it in the S&OP in 90 minutes."</div>
+            <div style="font-size:13px;color:#134E4A;font-style:italic;line-height:1.6;">"None of my team flagged this. Send me a written brief — I'm sharing it in the S&OP in 90 minutes."</div>
           </div>
         </div>
       </div>
@@ -566,8 +544,8 @@ header{
               <div class="sh-text">"They see things our own systems can't — and they call us first"</div>
             </div>
           </div>
-          <div style="margin-top:auto;background:rgba(0,180,162,.08);border-radius:8px;padding:12px 14px;font-size:12px;color:rgba(255,255,255,.6);line-height:1.5;">
-            <strong style="color:#fff;display:block;margin-bottom:3px;">The contract shift</strong>
+          <div style="margin-top:auto;background:#E6FAF8;border-radius:8px;padding:12px 14px;font-size:12px;color:#134E4A;line-height:1.5;">
+            <strong style="color:var(--navy);display:block;margin-bottom:3px;">The contract shift</strong>
             From "break-fix support measured by response time" → "strategic intelligence partner measured by stockouts prevented"
           </div>
         </div>
@@ -587,15 +565,10 @@ header{
 <script>
 let cur = 0;
 const TOTAL = 5;
-
 function go(i) {
   if (i < 0 || i >= TOTAL) return;
   cur = i;
-
-  // panels
   document.querySelectorAll('.panel').forEach((p, idx) => p.classList.toggle('active', idx === i));
-
-  // dots & labels
   for (let j = 0; j < TOTAL; j++) {
     const dot = document.getElementById('dot' + j);
     const lbl = document.getElementById('lbl' + j);
@@ -605,15 +578,12 @@ function go(i) {
     lbl.className = 'step-label' + (j < i ? ' done' : j === i ? ' active' : '');
     if (line) line.className = 'step-line' + (j < i ? ' done' : '');
   }
-
-  // nav
   document.getElementById('prevBtn').disabled = i === 0;
   document.getElementById('nextBtn').textContent = i === TOTAL - 1 ? 'Restart ↺' : 'Next →';
   document.getElementById('nextBtn').onclick = i === TOTAL - 1 ? () => go(0) : () => go(cur + 1);
   document.getElementById('progressText').textContent = 'Step ' + (i + 1) + ' of ' + TOTAL;
   document.getElementById('stepCounter').textContent = 'Step ' + (i + 1) + ' of ' + TOTAL;
 }
-
 document.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight') go(cur + 1);
   if (e.key === 'ArrowLeft') go(cur - 1);
