@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AlertTriangle, CheckCircle2, Clock3, LayoutGrid, SearchCheck, Ticket, TimerReset, UserRound } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Clock3, LayoutGrid, SearchCheck, Ticket, TimerReset, UserRound, ChevronDown, ChevronUp, Lightbulb, CheckCheck } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, Cell, Line, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import AppShell from "@/components/AppShell";
 import FilterBar, { FilterDef } from "@/components/FilterBar";
@@ -9,7 +9,7 @@ import { getPriorityRank, getPriorityTone, getStatusTone, ISSUE_TYPE_COLORS, OPE
 
 const FILTERS: FilterDef[] = [
   { type: "select", id: "status", label: "Status", options: ["All", "Open", "In Progress", "Blocked", "Escalated", "Closed"] },
-  { type: "select", id: "team", label: "Team", options: ["All", "NTT", "o9", "Anaplan", "Relex"] },
+  { type: "select", id: "team", label: "Team", options: ["All", "TMS", "Kinaxis", "Anaplan", "Blue Yonder"] },
   { type: "select", id: "domain", label: "Domain", options: ["All", "Demand", "Supply", "Control Tower"] },
   { type: "toggle", id: "priority", label: "Priority", options: ["All", "Critical", "High", "Medium", "Low"] },
   { type: "search", id: "search", label: "Ticket / Owner" },
@@ -72,7 +72,7 @@ function buildIssueMix(tickets: OpsTicket[]) {
 
 function buildTeamBacklog(tickets: OpsTicket[]) {
   const active = tickets.filter((ticket) => ticket.status !== "Closed");
-  return ["NTT", "o9", "Anaplan", "Relex"].map((team) => {
+  return ["TMS", "Kinaxis", "Anaplan", "Blue Yonder"].map((team) => {
     const mine = active.filter((ticket) => ticket.team === team);
     return {
       team,
@@ -83,10 +83,57 @@ function buildTeamBacklog(tickets: OpsTicket[]) {
   }).filter((row) => row.openTickets > 0);
 }
 
+function SolutionPanel({ ticket, onApprove }: { ticket: OpsTicket; onApprove: (id: string) => void }) {
+  const s = ticket.suggestedSolution!;
+  const confColor = s.confidence === "High" ? "text-emerald-600 bg-emerald-50 border-emerald-200"
+    : s.confidence === "Medium" ? "text-amber-600 bg-amber-50 border-amber-200"
+    : "text-slate-500 bg-slate-100 border-slate-200";
+  return (
+    <tr>
+      <td colSpan={11} className="px-4 pb-4 pt-0">
+        <div className="rounded-2xl border border-indigo-100 bg-indigo-50/60 p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Lightbulb size={14} className="text-indigo-500" />
+            <p className="text-xs font-semibold text-indigo-700 uppercase tracking-wide">Suggested Resolution</p>
+            <span className="ml-1 text-[10px] text-slate-400">based on</span>
+            <span className="text-[10px] font-semibold text-indigo-600 bg-indigo-100 px-2 py-0.5 rounded-full">{s.pastRef}</span>
+            <span className={`ml-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${confColor}`}>{s.confidence} confidence</span>
+            <span className="ml-auto text-[10px] text-slate-400">Resolved in {s.resolvedInDays}d last time</span>
+          </div>
+          <ol className="space-y-1.5 mb-4">
+            {s.steps.map((step, i) => (
+              <li key={i} className="flex items-start gap-2.5">
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-[10px] font-bold text-indigo-600">{i + 1}</span>
+                <p className="text-xs text-slate-700 leading-relaxed">{step}</p>
+              </li>
+            ))}
+          </ol>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onApprove(ticket.id)}
+              className="flex items-center gap-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 px-4 py-1.5 text-xs font-semibold text-white transition-colors"
+            >
+              <CheckCheck size={13} /> Approve &amp; Apply Solution
+            </button>
+            <span className="text-[11px] text-slate-400">or close this panel to choose a different approach</span>
+          </div>
+        </div>
+      </td>
+    </tr>
+  );
+}
+
 export default function OperationsDeskPage() {
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
+  const [expandedTicket, setExpandedTicket] = useState<string | null>(null);
+  const [approvedTickets, setApprovedTickets] = useState<Set<string>>(new Set());
   const set = (id: string, value: string) => setFilters((prev) => ({ ...prev, [id]: value }));
   const reset = () => setFilters(DEFAULT_FILTERS);
+
+  const handleApprove = (id: string) => {
+    setApprovedTickets((prev) => new Set(prev).add(id));
+    setExpandedTicket(null);
+  };
 
   const filtered = OPERATIONS_TICKETS.filter((ticket) => {
     if (filters.status !== "All" && ticket.status !== filters.status) return false;
@@ -261,26 +308,55 @@ export default function OperationsDeskPage() {
           <table className="w-full min-w-[1040px] text-sm">
             <thead>
               <tr className="border-b border-slate-100 text-left">
-                {["Ticket", "Issue", "Domain", "Team", "Assignee", "Status", "Priority", "Age", "ETA", "Last Update"].map((label) => (
+                {["Ticket", "Issue", "Domain", "Team", "Assignee", "Status", "Priority", "Age", "ETA", "Last Update", "Solution"].map((label) => (
                   <th key={label} className="pb-3 pr-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">{label}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {queue.map((ticket) => (
-                <tr key={ticket.id} className="border-b border-slate-50 align-top hover:bg-slate-50/70">
-                  <td className="py-3 pr-4"><div><p className="font-semibold text-slate-900">{ticket.id}</p><p className="text-xs text-slate-400">{ticket.issueType}</p></div></td>
-                  <td className="py-3 pr-4"><div className="max-w-[320px]"><p className="font-medium text-slate-800">{ticket.title}</p><p className="mt-1 text-xs leading-relaxed text-slate-500">{ticket.summary}</p></div></td>
-                  <td className="py-3 pr-4 text-slate-600">{ticket.domain}</td>
-                  <td className="py-3 pr-4 text-slate-600">{ticket.team}</td>
-                  <td className="py-3 pr-4 text-slate-700">{ticket.assignee}</td>
-                  <td className="py-3 pr-4"><span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-medium ${getStatusTone(ticket.status)}`}>{ticket.status}</span></td>
-                  <td className="py-3 pr-4"><span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-medium ${getPriorityTone(ticket.priority)}`}>{ticket.priority}</span></td>
-                  <td className="py-3 pr-4"><span className={`font-semibold ${ticket.ageDays > 120 ? "text-red-600" : ticket.ageDays > 60 ? "text-amber-600" : "text-slate-700"}`}>{ticket.ageDays}d</span></td>
-                  <td className="py-3 pr-4 text-slate-700">{ticket.etaDays}d</td>
-                  <td className="py-3 text-slate-500">{ticket.lastUpdated}</td>
-                </tr>
-              ))}
+              {queue.map((ticket) => {
+                const isExpanded = expandedTicket === ticket.id;
+                const isApproved = approvedTickets.has(ticket.id);
+                return (
+                  <>
+                    <tr key={ticket.id} className={`border-b border-slate-50 align-top hover:bg-slate-50/70 ${isExpanded ? "bg-indigo-50/30" : ""}`}>
+                      <td className="py-3 pr-4"><div><p className="font-semibold text-slate-900">{ticket.id}</p><p className="text-xs text-slate-400">{ticket.issueType}</p></div></td>
+                      <td className="py-3 pr-4"><div className="max-w-[320px]"><p className="font-medium text-slate-800">{ticket.title}</p><p className="mt-1 text-xs leading-relaxed text-slate-500">{ticket.summary}</p></div></td>
+                      <td className="py-3 pr-4 text-slate-600">{ticket.domain}</td>
+                      <td className="py-3 pr-4 text-slate-600">{ticket.team}</td>
+                      <td className="py-3 pr-4 text-slate-700">{ticket.assignee}</td>
+                      <td className="py-3 pr-4"><span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-medium ${getStatusTone(ticket.status)}`}>{ticket.status}</span></td>
+                      <td className="py-3 pr-4"><span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-medium ${getPriorityTone(ticket.priority)}`}>{ticket.priority}</span></td>
+                      <td className="py-3 pr-4"><span className={`font-semibold ${ticket.ageDays > 120 ? "text-red-600" : ticket.ageDays > 60 ? "text-amber-600" : "text-slate-700"}`}>{ticket.ageDays}d</span></td>
+                      <td className="py-3 pr-4 text-slate-700">{ticket.etaDays}d</td>
+                      <td className="py-3 pr-4 text-slate-500">{ticket.lastUpdated}</td>
+                      <td className="py-3">
+                        {ticket.suggestedSolution ? (
+                          isApproved ? (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-1 text-[11px] font-medium text-emerald-700">
+                              <CheckCheck size={11} /> Applied
+                            </span>
+                          ) : (
+                            <button
+                              onClick={() => setExpandedTicket(isExpanded ? null : ticket.id)}
+                              className="inline-flex items-center gap-1 rounded-xl border border-indigo-200 bg-white hover:bg-indigo-50 px-2.5 py-1 text-[11px] font-medium text-indigo-600 transition-colors"
+                            >
+                              <Lightbulb size={11} />
+                              Solution
+                              {isExpanded ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
+                            </button>
+                          )
+                        ) : (
+                          <span className="text-[11px] text-slate-300">—</span>
+                        )}
+                      </td>
+                    </tr>
+                    {isExpanded && ticket.suggestedSolution && (
+                      <SolutionPanel ticket={ticket} onApprove={handleApprove} />
+                    )}
+                  </>
+                );
+              })}
             </tbody>
           </table>
         </div>

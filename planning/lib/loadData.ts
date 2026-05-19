@@ -91,7 +91,7 @@ export type CrossKpis = {
 export function getWmsKpis(warehouse = "All"): WmsKpis {
   const base: Record<string, WmsKpis> = {
     All: { onTimeDispatch: 88.4, orderFillRate: 93.1, dockToStock: 3.2, receivingAccuracy: 94.8, orderPendencyPct: 12.6 },
-    DEL: { onTimeDispatch: 86.2, orderFillRate: 92.4, dockToStock: 3.5, receivingAccuracy: 93.9, orderPendencyPct: 14.1 },
+    DEL: { onTimeDispatch: 84.1, orderFillRate: 89.3, dockToStock: 3.8, receivingAccuracy: 93.2, orderPendencyPct: 18.4 },
     MUM: { onTimeDispatch: 90.1, orderFillRate: 94.0, dockToStock: 2.9, receivingAccuracy: 95.8, orderPendencyPct: 10.9 },
     BLR: { onTimeDispatch: 89.0, orderFillRate: 92.8, dockToStock: 3.1, receivingAccuracy: 94.6, orderPendencyPct: 12.8 },
   };
@@ -101,7 +101,7 @@ export function getWmsKpis(warehouse = "All"): WmsKpis {
 export function getTmsKpis(warehouse = "All"): TmsKpis {
   const base: Record<string, TmsKpis> = {
     All: { onTimeDelivery: 89.8, delayRate: 10.2, avgTransitDays: 2.6, costPerShipment: 3140, tenderAcceptance: 92.1 },
-    DEL: { onTimeDelivery: 88.3, delayRate: 11.7, avgTransitDays: 2.8, costPerShipment: 3320, tenderAcceptance: 91.4 },
+    DEL: { onTimeDelivery: 71.2, delayRate: 28.8, avgTransitDays: 3.8, costPerShipment: 3720, tenderAcceptance: 88.1 },
     MUM: { onTimeDelivery: 91.2, delayRate: 8.8,  avgTransitDays: 2.4, costPerShipment: 2980, tenderAcceptance: 93.0 },
     BLR: { onTimeDelivery: 90.0, delayRate: 10.0, avgTransitDays: 2.5, costPerShipment: 3100, tenderAcceptance: 92.0 },
   };
@@ -111,9 +111,9 @@ export function getTmsKpis(warehouse = "All"): TmsKpis {
 export function getPlanningKpis(warehouse = "All"): PlanningKpis {
   const base: Record<string, PlanningKpis> = {
     All: { totalSkus: 90, stockoutRiskHigh: 14, avgDaysOfCover: 18.4, demandVariancePct: 6.2, inventoryValueCr: 4.38, activePos: 52 },
-    DEL: { totalSkus: 30, stockoutRiskHigh: 5,  avgDaysOfCover: 17.1, demandVariancePct: 7.1, inventoryValueCr: 1.52, activePos: 18 },
-    MUM: { totalSkus: 30, stockoutRiskHigh: 4,  avgDaysOfCover: 19.8, demandVariancePct: 5.4, inventoryValueCr: 1.61, activePos: 17 },
-    BLR: { totalSkus: 30, stockoutRiskHigh: 5,  avgDaysOfCover: 18.2, demandVariancePct: 6.1, inventoryValueCr: 1.25, activePos: 17 },
+    DEL: { totalSkus: 30, stockoutRiskHigh: 14, avgDaysOfCover: 4.1,  demandVariancePct: 12.0, inventoryValueCr: 0.62, activePos: 6  },
+    MUM: { totalSkus: 30, stockoutRiskHigh: 4,  avgDaysOfCover: 19.8, demandVariancePct: 5.4,  inventoryValueCr: 1.61, activePos: 17 },
+    BLR: { totalSkus: 30, stockoutRiskHigh: 5,  avgDaysOfCover: 18.2, demandVariancePct: 6.1,  inventoryValueCr: 1.25, activePos: 17 },
   };
   return base[warehouse] ?? base["All"];
 }
@@ -265,6 +265,25 @@ export function getCrossAlerts(wms: WmsKpis, tms: TmsKpis, planning: PlanningKpi
       message: `Demand variance at ${planning.demandVariancePct}% (target ≤ 5%) — forecast accuracy degrading`,
       impact: "Inventory planning unreliable; risk of over/under-stocking",
       action: "Re-run demand forecast; review sales inputs for next planning cycle",
+    });
+  }
+
+  // ── Combined cross-system stockout risk ───────────────────────────────────────
+  // Fires only when all 4 signals are simultaneously stressed:
+  // demand spiking + stock cover critically low + carrier failing + PO backlog thin
+  const demandSpiking      = planning.demandVariancePct > 10;
+  const stockCriticallyLow = planning.avgDaysOfCover < 7;
+  const carrierFailing     = tms.onTimeDelivery < 80;
+  const replenishmentThin  = planning.activePos < 10;
+
+  if (demandSpiking && stockCriticallyLow && carrierFailing && replenishmentThin) {
+    alerts.push({
+      id: "CA-007",
+      severity: "critical",
+      source: ["Kinaxis", "Anaplan", "Blue Yonder", "TMS"],
+      message: `⚠ Cross-system stockout risk — 4 signals converging: demand +${planning.demandVariancePct}%, stock cover ${planning.avgDaysOfCover} days, carrier OTD ${tms.onTimeDelivery}%, only ${planning.activePos} active POs`,
+      impact: "Stockout projected within 7 days for Personal Care SKUs in DEL — no single system flagged this independently",
+      action: "Raise emergency replenishment PO immediately · Switch to alternate carrier for DEL inbound · Brief client SC Director before next S&OP",
     });
   }
 

@@ -220,11 +220,12 @@ export default function ControlTowerPage() {
           <ChainNode
             icon={Factory}
             title="Suppliers"
-            subtitle="8 active suppliers"
+            subtitle="Kinaxis · Anaplan"
             score={supplierScore}
             metrics={[
               { label: "Tender Acceptance", value: `${tms.tenderAcceptance}%` },
               { label: "Active POs",         value: `${planning.activePos}` },
+              { label: "Demand Variance",    value: `${planning.demandVariancePct}%` },
               { label: "Avg Lead Time",      value: `${tms.avgTransitDays}d` },
             ]}
             delay={0.05}
@@ -240,13 +241,13 @@ export default function ControlTowerPage() {
           <ChainNode
             icon={Warehouse}
             title="Warehouse"
-            subtitle={warehouse === "All" ? "DEL · MUM · BLR" : warehouse}
+            subtitle={`Blue Yonder · ${warehouse === "All" ? "DEL · MUM · BLR" : warehouse}`}
             score={wmsScore}
             metrics={[
-              { label: "Dock-to-Stock",    value: `${wms.dockToStock}h`       },
-              { label: "Fill Rate",        value: `${wms.orderFillRate}%`      },
-              { label: "Receiving Acc.",   value: `${wms.receivingAccuracy}%`  },
-              { label: "Pendency",         value: `${wms.orderPendencyPct}%`   },
+              { label: "Days of Cover",    value: `${planning.avgDaysOfCover}d`  },
+              { label: "Stockout Risk",    value: `${planning.stockoutRiskHigh} SKUs` },
+              { label: "Fill Rate",        value: `${wms.orderFillRate}%`        },
+              { label: "Dock-to-Stock",    value: `${wms.dockToStock}h`          },
             ]}
             delay={0.15}
           />
@@ -261,7 +262,7 @@ export default function ControlTowerPage() {
           <ChainNode
             icon={Truck}
             title="Transport"
-            subtitle="5 carriers"
+            subtitle="TMS · Blue Dart"
             score={tmsOutScore}
             metrics={[
               { label: "On-Time Delivery", value: `${tms.onTimeDelivery}%`     },

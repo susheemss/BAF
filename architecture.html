@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Platform Architecture — Supply Chain Intelligence Hub</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+body{font-family:'Inter',sans-serif;background:#F1F5F9;min-height:100vh;padding:32px 24px;}
+
+/* ── Layout ── */
+.page{max-width:1200px;margin:0 auto;}
+
+/* ── Header ── */
+.hdr{text-align:center;margin-bottom:36px;}
+.hdr-eyebrow{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#6366F1;margin-bottom:8px;}
+.hdr-title{font-size:28px;font-weight:800;color:#0B1F3B;margin-bottom:6px;}
+.hdr-sub{font-size:13px;color:#64748B;}
+
+/* ── Layer label ── */
+.layer-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#94A3B8;margin-bottom:10px;padding-left:4px;}
+
+/* ── Row ── */
+.row{display:flex;gap:12px;align-items:stretch;margin-bottom:8px;}
+.row.centered{justify-content:center;}
+
+/* ── Arrow row ── */
+.arrow-row{display:flex;justify-content:center;align-items:center;gap:0;margin:4px 0;}
+.arrow-col{display:flex;flex-direction:column;align-items:center;gap:0;flex:1;}
+.arrow-line{width:2px;height:28px;background:#CBD5E1;}
+.arrow-head{width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid #CBD5E1;}
+.arrow-label{font-size:10px;color:#94A3B8;margin-bottom:2px;font-weight:500;}
+
+/* ── Card base ── */
+.card{border-radius:12px;padding:14px 16px;flex:1;min-width:0;}
+
+/* ── Source systems (Unilever) ── */
+.src{background:#fff;border:1.5px solid #E2E8F0;}
+.src-badge{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:3px 8px;border-radius:6px;margin-bottom:8px;}
+.src-title{font-size:14px;font-weight:700;color:#1E293B;margin-bottom:2px;}
+.src-sub{font-size:11px;color:#64748B;margin-bottom:8px;}
+.src-tags{display:flex;flex-wrap:wrap;gap:4px;}
+.src-tag{font-size:10px;background:#F1F5F9;color:#475569;padding:2px 7px;border-radius:4px;}
+
+/* badge colours */
+.b-kinaxis{background:#FEF3C7;color:#92400E;}
+.b-anaplan{background:#DBEAFE;color:#1E40AF;}
+.b-by{background:#D1FAE5;color:#065F46;}
+.b-tms{background:#EDE9FE;color:#5B21B6;}
+
+/* ── Data flow band ── */
+.flow-band{background:#0B1F3B;border-radius:12px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:8px;}
+.flow-band-title{font-size:12px;font-weight:700;color:#fff;}
+.flow-band-sub{font-size:11px;color:#94A3B8;margin-top:2px;}
+.flow-pills{display:flex;gap:8px;flex-wrap:wrap;}
+.flow-pill{font-size:10px;font-weight:600;background:rgba(255,255,255,.1);color:#CBD5E1;padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.15);}
+
+/* ── Platform core ── */
+.platform{background:#fff;border:2px solid #6366F1;border-radius:16px;padding:18px 20px;flex:1;}
+.platform-title{font-size:13px;font-weight:800;color:#4338CA;margin-bottom:4px;display:flex;align-items:center;gap:6px;}
+.platform-sub{font-size:11px;color:#64748B;margin-bottom:14px;}
+.module-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.module{background:#F8FAFF;border:1px solid #E0E7FF;border-radius:8px;padding:10px 12px;}
+.module-name{font-size:11px;font-weight:700;color:#3730A3;margin-bottom:3px;}
+.module-desc{font-size:10px;color:#6B7280;line-height:1.4;}
+.module.red-mod{background:#FFF5F5;border-color:#FECACA;}
+.module.red-mod .module-name{color:#B91C1C;}
+
+/* ── Sub apps ── */
+.subapp{background:#fff;border:1.5px solid #E2E8F0;border-radius:12px;padding:14px 16px;flex:1;}
+.subapp-badge{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:2px 8px;border-radius:5px;display:inline-block;margin-bottom:8px;}
+.ba-wde{background:#ECFDF5;color:#065F46;}
+.ba-tms{background:#EFF6FF;color:#1E40AF;}
+.subapp-title{font-size:13px;font-weight:700;color:#1E293B;margin-bottom:2px;}
+.subapp-sub{font-size:11px;color:#64748B;margin-bottom:10px;}
+.subapp-tags{display:flex;flex-wrap:wrap;gap:4px;}
+.subapp-tag{font-size:10px;background:#F1F5F9;color:#475569;padding:2px 7px;border-radius:4px;}
+
+/* ── AI layer ── */
+.ai-card{background:linear-gradient(135deg,#4F46E5,#7C3AED);border-radius:12px;padding:14px 16px;flex:1;color:#fff;}
+.ai-title{font-size:12px;font-weight:700;margin-bottom:3px;}
+.ai-sub{font-size:10px;color:rgba(255,255,255,.7);margin-bottom:8px;}
+.ai-tags{display:flex;flex-wrap:wrap;gap:4px;}
+.ai-tag{font-size:10px;background:rgba(255,255,255,.15);color:#E0E7FF;padding:2px 8px;border-radius:4px;}
+
+/* ── Auth card ── */
+.auth-card{background:#fff;border:1.5px solid #E2E8F0;border-radius:12px;padding:14px 16px;flex:1;}
+.auth-badge{font-size:10px;font-weight:700;color:#7C3AED;letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;}
+.auth-title{font-size:13px;font-weight:700;color:#1E293B;margin-bottom:2px;}
+.auth-sub{font-size:11px;color:#64748B;}
+
+/* ── Users ── */
+.user-card{background:#fff;border:1.5px solid #E2E8F0;border-radius:12px;padding:14px 16px;flex:1;text-align:center;}
+.user-icon{font-size:24px;margin-bottom:6px;}
+.user-name{font-size:12px;font-weight:700;color:#1E293B;margin-bottom:2px;}
+.user-sub{font-size:10px;color:#64748B;}
+.user-card.highlight{border-color:#6366F1;background:#F8FAFF;}
+
+/* ── Legend ── */
+.legend{display:flex;gap:20px;justify-content:center;margin-top:28px;flex-wrap:wrap;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#64748B;}
+.legend-dot{width:10px;height:10px;border-radius:3px;}
+
+/* ── Calc box ── */
+.calc-box{background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:10px 14px;margin-top:10px;}
+.calc-title{font-size:10px;font-weight:700;color:#92400E;margin-bottom:6px;text-transform:uppercase;letter-spacing:.6px;}
+.calc-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:4px;}
+.calc-file{font-size:10px;font-weight:600;color:#1D4ED8;background:#EFF6FF;padding:1px 6px;border-radius:3px;white-space:nowrap;}
+.calc-desc{font-size:10px;color:#78350F;}
+
+.port-badge{font-size:10px;background:#F1F5F9;color:#64748B;padding:1px 7px;border-radius:10px;font-weight:600;margin-left:4px;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="hdr">
+    <div class="hdr-eyebrow">System Architecture</div>
+    <div class="hdr-title">Supply Chain Intelligence Hub</div>
+    <div class="hdr-sub">How our platform connects Unilever's four systems into a single cross-system intelligence layer</div>
+  </div>
+
+  <!-- ── LAYER 1: Unilever source systems ── -->
+  <div class="layer-label">Layer 1 — Unilever's Source Systems</div>
+  <div class="row">
+    <div class="card src">
+      <div class="src-badge b-kinaxis">Kinaxis</div>
+      <div class="src-title">Demand Planning</div>
+      <div class="src-sub">Forecast variance · Category signals · SKU-level demand</div>
+      <div class="src-tags">
+        <span class="src-tag">Demand Plan</span>
+        <span class="src-tag">Actual Demand</span>
+        <span class="src-tag">Variance %</span>
+      </div>
+    </div>
+    <div class="card src">
+      <div class="src-badge b-anaplan">Anaplan</div>
+      <div class="src-title">Supply Planning</div>
+      <div class="src-sub">PO pipeline · Replenishment · Supplier constraints</div>
+      <div class="src-tags">
+        <span class="src-tag">PO Status</span>
+        <span class="src-tag">Expected Receipt</span>
+        <span class="src-tag">Active POs</span>
+      </div>
+    </div>
+    <div class="card src">
+      <div class="src-badge b-by">Blue Yonder</div>
+      <div class="src-title">Warehouse (WMS)</div>
+      <div class="src-sub">Stock on hand · Days of cover · Stockout risk</div>
+      <div class="src-tags">
+        <span class="src-tag">Days of Cover</span>
+        <span class="src-tag">Stock on Hand</span>
+        <span class="src-tag">Stockout Risk</span>
+      </div>
+    </div>
+    <div class="card src">
+      <div class="src-badge b-tms">TMS</div>
+      <div class="src-title">Transport</div>
+      <div class="src-sub">Carrier OTD · Transit time · Route performance</div>
+      <div class="src-tags">
+        <span class="src-tag">OTD %</span>
+        <span class="src-tag">Delay Rate</span>
+        <span class="src-tag">Transit Days</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrow -->
+  <div class="arrow-row">
+    <div class="arrow-col">
+      <div class="arrow-label">CSV / API data feeds · overnight</div>
+      <div class="arrow-line"></div>
+      <div class="arrow-head"></div>
+    </div>
+  </div>
+
+  <!-- ── LAYER 2: Data ingestion ── -->
+  <div class="flow-band" style="margin-bottom:8px;">
+    <div>
+      <div class="flow-band-title">Data Ingestion Layer</div>
+      <div class="flow-band-sub">Structured CSV uploads · PapaParse · Next.js API routes · FastAPI (WDE)</div>
+    </div>
+    <div class="flow-pills">
+      <span class="flow-pill">planning_demand_supply.csv</span>
+      <span class="flow-pill">TMS.csv (3,600 rows)</span>
+      <span class="flow-pill">WMS XLSX / CSV upload</span>
+      <span class="flow-pill">/api/planning</span>
+      <span class="flow-pill">/api/tms/shipments</span>
+    </div>
+  </div>
+
+  <!-- Arrow -->
+  <div class="arrow-row">
+    <div class="arrow-col">
+      <div class="arrow-line"></div>
+      <div class="arrow-head"></div>
+    </div>
+  </div>
+
+  <!-- ── LAYER 3: Platform core ── -->
+  <div class="layer-label">Layer 2 — Our Platform (Planning Hub) <span class="port-badge">localhost:3002</span></div>
+  <div class="row" style="margin-bottom:8px;">
+    <div class="platform">
+      <div class="platform-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4338CA" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Planning Hub — Next.js 14 · TypeScript · Tailwind
+      </div>
+      <div class="platform-sub">Cross-system intelligence layer — all four source systems visible on one screen</div>
+      <div class="module-grid">
+        <div class="module">
+          <div class="module-name">Executive Overview</div>
+          <div class="module-desc">WMS + TMS + Planning KPIs on one dashboard. Cross-system signals panel. PPT generation.</div>
+        </div>
+        <div class="module">
+          <div class="module-name">Resilient Control Tower</div>
+          <div class="module-desc">Node flow: Suppliers → Warehouse → Transport → Customer. Health scores per node.</div>
+        </div>
+        <div class="module red-mod">
+          <div class="module-name">⚠ Cross-System Alerts</div>
+          <div class="module-desc">CA-007: fires when demand &gt;10% + cover &lt;7d + OTD &lt;80% + POs &lt;10 simultaneously.</div>
+        </div>
+        <div class="module">
+          <div class="module-name">Operations Desk</div>
+          <div class="module-desc">Ticket queue across Kinaxis, Anaplan, Blue Yonder, TMS. AI-suggested resolutions.</div>
+        </div>
+        <div class="module">
+          <div class="module-name">Demand Planning</div>
+          <div class="module-desc">Demand vs plan. Category mix. SKU-level variance. Monthly trend charts.</div>
+        </div>
+        <div class="module">
+          <div class="module-name">Supply Planning</div>
+          <div class="module-desc">PO pipeline. Days of cover by category. Replenishment risk. Inventory value.</div>
+        </div>
+      </div>
+
+      <!-- Calculation config box -->
+      <div class="calc-box">
+        <div class="calc-title">Where calculations are configured</div>
+        <div class="calc-row">
+          <span class="calc-file">lib/loadData.ts</span>
+          <span class="calc-desc">KPI values per warehouse (DEL/MUM/BLR) · getCrossKpis() · getCrossAlerts() · CA-007 combined stockout rule</span>
+        </div>
+        <div class="calc-row">
+          <span class="calc-file">api/planning/route.ts</span>
+          <span class="calc-desc">Live CSV parsing · stockout risk count · demand variance · days of cover · PO status aggregation</span>
+        </div>
+        <div class="calc-row">
+          <span class="calc-file">lib/operationsTickets.ts</span>
+          <span class="calc-desc">Ticket data · team assignments · suggested resolutions with past reference and confidence scores</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Arrow -->
+  <div class="arrow-row">
+    <div class="arrow-col">
+      <div class="arrow-line"></div>
+      <div class="arrow-head"></div>
+    </div>
+  </div>
+
+  <!-- ── LAYER 3: Sub-apps ── -->
+  <div class="layer-label">Layer 3 — Specialist Apps</div>
+  <div class="row" style="margin-bottom:8px;">
+
+    <div class="subapp">
+      <div class="subapp-badge ba-wde">WDE</div>
+      <div class="subapp-title">Warehouse Diagnosis Engine <span class="port-badge">:3000 + :8001</span></div>
+      <div class="subapp-sub">Deep-dive warehouse KPIs · AI anomaly detection · Inbound velocity · Fulfillment accuracy</div>
+      <div class="subapp-tags">
+        <span class="subapp-tag">Next.js 14 frontend</span>
+        <span class="subapp-tag">FastAPI Python backend</span>
+        <span class="subapp-tag">Supabase auth</span>
+        <span class="subapp-tag">Inbound Classifier AI</span>
+        <span class="subapp-tag">Drift Monitor AI</span>
+        <span class="subapp-tag">Exception Agent AI</span>
+      </div>
+    </div>
+
+    <div class="subapp">
+      <div class="subapp-badge ba-tms">TMS</div>
+      <div class="subapp-title">Supply Master — TMS <span class="port-badge">:3001</span></div>
+      <div class="subapp-sub">Live carrier map · Route OTD · Cost KPIs · Carrier performance alerts</div>
+      <div class="subapp-tags">
+        <span class="subapp-tag">Next.js 14</span>
+        <span class="subapp-tag">Leaflet live map</span>
+        <span class="subapp-tag">3,600-row TMS.csv</span>
+        <span class="subapp-tag">React Context state</span>
+        <span class="subapp-tag">Carrier KPIs</span>
+        <span class="subapp-tag">Route alerts</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Arrow -->
+  <div class="arrow-row">
+    <div class="arrow-col">
+      <div class="arrow-line"></div>
+      <div class="arrow-head"></div>
+    </div>
+  </div>
+
+  <!-- ── LAYER 4: AI + Auth ── -->
+  <div class="layer-label">Layer 4 — AI &amp; Auth Services</div>
+  <div class="row" style="margin-bottom:8px;">
+
+    <div class="ai-card">
+      <div class="ai-title">VAPI Voice AI</div>
+      <div class="ai-sub">Shared across all three apps · Same assistant ID</div>
+      <div class="ai-tags">
+        <span class="ai-tag">Voice briefing</span>
+        <span class="ai-tag">Natural language Q&amp;A</span>
+        <span class="ai-tag">Planning Hub widget</span>
+        <span class="ai-tag">TMS Alerts page</span>
+      </div>
+    </div>
+
+    <div class="ai-card" style="background:linear-gradient(135deg,#0F766E,#0891B2);">
+      <div class="ai-title">Data Chat AI</div>
+      <div class="ai-sub">Ask questions about KPI data in plain language</div>
+      <div class="ai-tags">
+        <span class="ai-tag">DataChatWidget</span>
+        <span class="ai-tag">/api/chat/data</span>
+        <span class="ai-tag">LLM-powered</span>
+        <span class="ai-tag">CSV context</span>
+      </div>
+    </div>
+
+    <div class="auth-card">
+      <div class="auth-badge">Auth</div>
+      <div class="auth-title">Supabase</div>
+      <div class="auth-sub">JWT session auth for WDE. <code style="font-size:10px;background:#F1F5F9;padding:1px 4px;border-radius:3px;">wde_session</code> cookie. Middleware protects all non-public routes.</div>
+    </div>
+
+  </div>
+
+  <!-- Arrow -->
+  <div class="arrow-row">
+    <div class="arrow-col">
+      <div class="arrow-line"></div>
+      <div class="arrow-head"></div>
+    </div>
+  </div>
+
+  <!-- ── LAYER 5: Users ── -->
+  <div class="layer-label">Layer 5 — Users</div>
+  <div class="row centered" style="max-width:700px;margin:0 auto 8px;">
+    <div class="user-card highlight">
+      <div class="user-icon">👩‍💼</div>
+      <div class="user-name">Our Managed Services Team</div>
+      <div class="user-sub">Opens Planning Hub every morning · Sees all 4 systems on one screen · Calls client proactively</div>
+    </div>
+    <div class="user-card">
+      <div class="user-icon">🏢</div>
+      <div class="user-name">Unilever Supply Chain Director</div>
+      <div class="user-sub">Receives proactive briefing · Walks into S&amp;OP with cross-system picture already prepared</div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#6366F1;"></div> Planning Hub (core platform)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#059669;"></div> WDE (warehouse deep-dive)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#2563EB;"></div> TMS Supply Master</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#7C3AED;"></div> AI layer (VAPI + DataChat)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#F59E0B;"></div> Where calculations live</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#DC2626;"></div> Cross-system alert logic</div>
+  </div>
+
+</div>
+</body>
+</html>

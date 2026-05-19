@@ -1,7 +1,8 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { LogOut } from "lucide-react";
 import html2canvas from "html2canvas";
 
 const LABELS: Record<string, string> = {
@@ -26,6 +27,7 @@ export default function Header() {
 
   const label = LABELS[pathname] ?? "Planning Hub";
   const [snapping, setSnapping] = useState(false);
+  const router = useRouter();
 
   const takeSnapshot = async () => {
     setSnapping(true);
@@ -91,6 +93,14 @@ export default function Header() {
             <circle cx="12" cy="13" r="4"/>
           </svg>
           {snapping ? "Capturing…" : "Snapshot"}
+        </button>
+        <button
+          onClick={() => router.push("/login")}
+          title="Log out"
+          className="flex items-center gap-1.5 text-xs bg-white hover:bg-red-50 border border-slate-200 hover:border-red-200 text-slate-600 hover:text-red-600 px-3 py-1.5 rounded-full transition-colors"
+        >
+          <LogOut size={13} />
+          Log out
         </button>
       </div>
     </header>
