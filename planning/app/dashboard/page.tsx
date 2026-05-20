@@ -31,7 +31,7 @@ const DASHBOARD_FILTERS: FilterDef[] = [
   { type: "select",  id: "toMonth",   label: "To Month",   options: ["All", ...ALL_MONTHS] },
 ];
 
-const DEFAULT_FILTERS = { warehouse: "All", category: "All", fromMonth: "All", toMonth: "All" };
+const DEFAULT_FILTERS = { warehouse: "DEL", category: "All", fromMonth: "All", toMonth: "All" };
 
 function trend(val: number, target: number) {
   if (val >= target)      return { icon: TrendingUp,   cls: "text-emerald-500" };

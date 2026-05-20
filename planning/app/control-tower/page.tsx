@@ -22,7 +22,7 @@ const CT_FILTERS: FilterDef[] = [
   { type: "select",  id: "toMonth",   label: "To Month",   options: ["All", ...ALL_MONTHS] },
 ];
 
-const DEFAULT_FILTERS = { warehouse: "All", category: "All", fromMonth: "All", toMonth: "All" };
+const DEFAULT_FILTERS = { warehouse: "DEL", category: "All", fromMonth: "All", toMonth: "All" };
 
 // ── Node health colour ────────────────────────────────────────────────────────
 function healthColor(score: number) {
