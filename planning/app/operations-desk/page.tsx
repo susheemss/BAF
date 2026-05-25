@@ -8,7 +8,6 @@ import FilterBar, { FilterDef } from "@/components/FilterBar";
 import { getPriorityRank, getPriorityTone, getStatusTone, ISSUE_TYPE_COLORS, CATEGORY_META, OPERATIONS_TICKETS, categorizeTicket, findSimilarTickets, type Ticket as OpsTicket, type TicketType, type TicketPriority, type SuggestedSolution } from "@/lib/operationsTickets";
 
 const FILTERS: FilterDef[] = [
-  { type: "select", id: "category", label: "Category", options: ["All", "Authorization", "System Issue", "Data Issue", "Refinement", "Feature Development", "User Question"] },
   { type: "select", id: "status", label: "Status", options: ["All", "Open", "In Progress", "Blocked", "Escalated", "Closed"] },
   { type: "select", id: "team", label: "Team", options: ["All", "TMS", "Kinaxis", "Anaplan", "Blue Yonder"] },
   { type: "select", id: "domain", label: "Domain", options: ["All", "Demand", "Supply", "Control Tower"] },
@@ -418,6 +417,17 @@ export default function OperationsDeskPage() {
   const avgOpenAge = openTickets.length ? Number((openTickets.reduce((sum, ticket) => sum + ticket.ageDays, 0) / openTickets.length).toFixed(1)) : 0;
   const avgEta = openTickets.length ? Number((openTickets.reduce((sum, ticket) => sum + ticket.etaDays, 0) / openTickets.length).toFixed(1)) : 0;
   const atRiskCount = openTickets.filter((ticket) => ticket.priority === "Critical" || ticket.ageDays > 120 || ticket.status === "Blocked").length;
+  // counts for tabs — exclude category filter so each tab always shows its real count
+  const openForCounts = allTickets.filter((t) => {
+    if (t.status === "Closed") return false;
+    if (filters.status !== "All" && t.status !== filters.status) return false;
+    if (filters.team !== "All" && t.team !== filters.team) return false;
+    if (filters.domain !== "All" && t.domain !== filters.domain) return false;
+    if (filters.priority !== "All" && t.priority !== filters.priority) return false;
+    if (!filters.search) return true;
+    return `${t.id} ${t.title} ${t.assignee} ${t.issueType}`.toLowerCase().includes(filters.search.toLowerCase());
+  });
+
   const trend = buildMonthlyTrend(allTickets);
   const topOwners = buildAssigneeLoad(filtered);
   const issueMix = buildIssueMix(filtered);
@@ -451,8 +461,6 @@ export default function OperationsDeskPage() {
       </div>
 
       <FilterBar filters={FILTERS} values={filters} onChange={set} onReset={reset} />
-
-      <CategoryStrip tickets={allTickets} onFilter={filterByCategory} />
 
       <div className="mb-6 grid grid-cols-2 gap-4 xl:grid-cols-5">
         <MetricCard title="Open Tickets" value={String(openTickets.length)} subtitle="Current active backlog" icon={Ticket} accent="bg-amber-50 text-amber-600" />
@@ -573,13 +581,49 @@ export default function OperationsDeskPage() {
         </div>
       </div>
 
-      <div className="card p-5">
+      {/* Category tab bar */}
+      <div className="flex items-end gap-0 overflow-x-auto border-b-2 border-slate-100 mb-0">
+        {(["All", ...ALL_CATEGORIES] as (TicketType | "All")[]).map((cat) => {
+          const isAll = cat === "All";
+          const count = isAll
+            ? openForCounts.length
+            : openForCounts.filter((t) => t.issueType === cat).length;
+          const s = !isAll ? CATEGORY_STYLES[cat as TicketType] : null;
+          const Icon = !isAll ? CATEGORY_ICONS[cat as TicketType] : null;
+          const isActive = (isAll && filters.category === "All") || filters.category === cat;
+          return (
+            <button
+              key={cat}
+              onClick={() => filterByCategory(isAll ? "All" : (cat as string))}
+              className={`flex shrink-0 items-center gap-1.5 px-5 py-3 text-xs font-semibold border-b-2 -mb-0.5 transition-all whitespace-nowrap ${
+                isActive
+                  ? isAll
+                    ? "border-indigo-500 text-indigo-700 bg-indigo-50/50 rounded-t-xl"
+                    : `border-current ${s!.text} rounded-t-xl`
+                  : "border-transparent text-slate-400 hover:text-slate-700 hover:border-slate-300 hover:bg-slate-50/60 rounded-t-xl"
+              }`}
+            >
+              {Icon && <Icon size={12} />}
+              {cat}
+              <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
+                isActive
+                  ? isAll ? "bg-indigo-100 text-indigo-600" : `${s!.bg} ${s!.text}`
+                  : "bg-slate-100 text-slate-500"
+              }`}>{count}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="card rounded-tl-none p-5">
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold text-slate-900">Open Ticket Queue</p>
-            <p className="text-xs text-slate-500">Priority-first working table with owner, age, ETA, and current status.</p>
+            <p className="text-sm font-semibold text-slate-900">
+              {filters.category === "All" ? "All Open Tickets" : filters.category}
+            </p>
+            <p className="text-xs text-slate-500">Priority-first · owner · age · ETA · status</p>
           </div>
-          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">{queue.length} active tickets</span>
+          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">{queue.length} active</span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[1040px] text-sm">
