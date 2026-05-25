@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { AlertTriangle, CheckCircle2, Clock3, LayoutGrid, SearchCheck, Ticket, TimerReset, UserRound, ChevronDown, ChevronUp, Lightbulb, CheckCheck } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Clock3, LayoutGrid, SearchCheck, Ticket, TimerReset, UserRound, ChevronDown, ChevronUp, Lightbulb, CheckCheck, ShieldCheck, AlertOctagon, Database, Wrench, Zap, HelpCircle } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, Cell, Line, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import AppShell from "@/components/AppShell";
 import FilterBar, { FilterDef } from "@/components/FilterBar";
-import { getPriorityRank, getPriorityTone, getStatusTone, ISSUE_TYPE_COLORS, OPERATIONS_TICKETS, type Ticket as OpsTicket } from "@/lib/operationsTickets";
+import { getPriorityRank, getPriorityTone, getStatusTone, ISSUE_TYPE_COLORS, CATEGORY_META, OPERATIONS_TICKETS, type Ticket as OpsTicket, type TicketType } from "@/lib/operationsTickets";
 
 const FILTERS: FilterDef[] = [
+  { type: "select", id: "category", label: "Category", options: ["All", "Authorization", "System Issue", "Data Issue", "Refinement", "Feature Development", "User Question"] },
   { type: "select", id: "status", label: "Status", options: ["All", "Open", "In Progress", "Blocked", "Escalated", "Closed"] },
   { type: "select", id: "team", label: "Team", options: ["All", "TMS", "Kinaxis", "Anaplan", "Blue Yonder"] },
   { type: "select", id: "domain", label: "Domain", options: ["All", "Demand", "Supply", "Control Tower"] },
@@ -15,7 +16,25 @@ const FILTERS: FilterDef[] = [
   { type: "search", id: "search", label: "Ticket / Owner" },
 ];
 
-const DEFAULT_FILTERS = { status: "All", team: "All", domain: "All", priority: "All", search: "" };
+const DEFAULT_FILTERS = { category: "All", status: "All", team: "All", domain: "All", priority: "All", search: "" };
+
+const CATEGORY_ICONS: Record<TicketType, React.ElementType> = {
+  Authorization:         ShieldCheck,
+  "System Issue":        AlertOctagon,
+  "Data Issue":          Database,
+  Refinement:            Wrench,
+  "Feature Development": Zap,
+  "User Question":       HelpCircle,
+};
+
+const CATEGORY_STYLES: Record<TicketType, { bg: string; text: string; border: string; dot: string }> = {
+  Authorization:         { bg: "bg-purple-50",  text: "text-purple-700",  border: "border-purple-100", dot: "bg-purple-500" },
+  "System Issue":        { bg: "bg-red-50",     text: "text-red-700",     border: "border-red-100",    dot: "bg-red-500" },
+  "Data Issue":          { bg: "bg-amber-50",   text: "text-amber-700",   border: "border-amber-100",  dot: "bg-amber-500" },
+  Refinement:            { bg: "bg-sky-50",     text: "text-sky-700",     border: "border-sky-100",    dot: "bg-sky-500" },
+  "Feature Development": { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-100",dot: "bg-emerald-500" },
+  "User Question":       { bg: "bg-slate-100",  text: "text-slate-700",   border: "border-slate-200",  dot: "bg-slate-500" },
+};
 
 function MetricCard({ title, value, subtitle, icon: Icon, accent }: { title: string; value: string; subtitle: string; icon: React.ElementType; accent: string }) {
   return (
@@ -123,12 +142,43 @@ function SolutionPanel({ ticket, onApprove }: { ticket: OpsTicket; onApprove: (i
   );
 }
 
+const ALL_CATEGORIES = Object.keys(CATEGORY_META) as TicketType[];
+
+function CategoryStrip({ tickets, onFilter }: { tickets: OpsTicket[]; onFilter: (cat: string) => void }) {
+  const active = tickets.filter((t) => t.status !== "Closed");
+  return (
+    <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+      {ALL_CATEGORIES.map((cat) => {
+        const count = active.filter((t) => t.issueType === cat).length;
+        const s = CATEGORY_STYLES[cat];
+        const Icon = CATEGORY_ICONS[cat];
+        const meta = CATEGORY_META[cat];
+        return (
+          <button
+            key={cat}
+            onClick={() => onFilter(cat)}
+            className={`rounded-2xl border ${s.border} ${s.bg} px-4 py-3 text-left transition-all hover:shadow-md hover:scale-[1.02]`}
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <Icon size={14} className={s.text} />
+              <span className={`text-[10px] font-bold uppercase tracking-[0.18em] ${s.text}`}>{cat}</span>
+            </div>
+            <p className={`text-2xl font-bold ${s.text}`}>{count}</p>
+            <p className="mt-1 text-[10px] text-slate-400">{meta.sla}</p>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function OperationsDeskPage() {
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [expandedTicket, setExpandedTicket] = useState<string | null>(null);
   const [approvedTickets, setApprovedTickets] = useState<Set<string>>(new Set());
   const set = (id: string, value: string) => setFilters((prev) => ({ ...prev, [id]: value }));
   const reset = () => setFilters(DEFAULT_FILTERS);
+  const filterByCategory = (cat: string) => setFilters((prev) => ({ ...prev, category: cat }));
 
   const handleApprove = (id: string) => {
     setApprovedTickets((prev) => new Set(prev).add(id));
@@ -136,6 +186,7 @@ export default function OperationsDeskPage() {
   };
 
   const filtered = OPERATIONS_TICKETS.filter((ticket) => {
+    if (filters.category !== "All" && ticket.issueType !== filters.category) return false;
     if (filters.status !== "All" && ticket.status !== filters.status) return false;
     if (filters.team !== "All" && ticket.team !== filters.team) return false;
     if (filters.domain !== "All" && ticket.domain !== filters.domain) return false;
@@ -176,6 +227,8 @@ export default function OperationsDeskPage() {
       </div>
 
       <FilterBar filters={FILTERS} values={filters} onChange={set} onReset={reset} />
+
+      <CategoryStrip tickets={OPERATIONS_TICKETS} onFilter={filterByCategory} />
 
       <div className="mb-6 grid grid-cols-2 gap-4 xl:grid-cols-5">
         <MetricCard title="Open Tickets" value={String(openTickets.length)} subtitle="Current active backlog" icon={Ticket} accent="bg-amber-50 text-amber-600" />
