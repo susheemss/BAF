@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { AlertTriangle, CheckCircle2, Clock3, LayoutGrid, SearchCheck, Ticket, TimerReset, UserRound, ChevronDown, ChevronUp, Lightbulb, CheckCheck, ShieldCheck, AlertOctagon, Database, Wrench, Zap, HelpCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { AlertTriangle, CheckCircle2, Clock3, LayoutGrid, SearchCheck, Ticket, TimerReset, UserRound, ChevronDown, ChevronUp, Lightbulb, CheckCheck, ShieldCheck, AlertOctagon, Database, Wrench, Zap, HelpCircle, X, Plus, History } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, Cell, Line, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import AppShell from "@/components/AppShell";
 import FilterBar, { FilterDef } from "@/components/FilterBar";
-import { getPriorityRank, getPriorityTone, getStatusTone, ISSUE_TYPE_COLORS, CATEGORY_META, OPERATIONS_TICKETS, type Ticket as OpsTicket, type TicketType } from "@/lib/operationsTickets";
+import { getPriorityRank, getPriorityTone, getStatusTone, ISSUE_TYPE_COLORS, CATEGORY_META, OPERATIONS_TICKETS, categorizeTicket, findSimilarTickets, type Ticket as OpsTicket, type TicketType, type TicketPriority, type SuggestedSolution } from "@/lib/operationsTickets";
 
 const FILTERS: FilterDef[] = [
   { type: "select", id: "category", label: "Category", options: ["All", "Authorization", "System Issue", "Data Issue", "Refinement", "Feature Development", "User Question"] },
@@ -144,6 +144,214 @@ function SolutionPanel({ ticket, onApprove }: { ticket: OpsTicket; onApprove: (i
 
 const ALL_CATEGORIES = Object.keys(CATEGORY_META) as TicketType[];
 
+let _nextId = 2580;
+function nextTicketId() { return `OPS-${_nextId++}`; }
+
+function NewTicketPanel({ onClose, onSubmit }: { onClose: () => void; onSubmit: (t: OpsTicket) => void }) {
+  const [title, setTitle]           = useState("");
+  const [description, setDescription] = useState("");
+  const [team, setTeam]             = useState<OpsTicket["team"]>("Blue Yonder");
+  const [domain, setDomain]         = useState<OpsTicket["domain"]>("Supply");
+  const [priority, setPriority]     = useState<TicketPriority>("Medium");
+  const [catResult, setCatResult]   = useState<ReturnType<typeof categorizeTicket> | null>(null);
+  const [similar, setSimilar]       = useState<OpsTicket[]>([]);
+  const [picked, setPicked]         = useState<{ sol: SuggestedSolution; ref: string } | null>(null);
+
+  useEffect(() => {
+    if (title.trim().length < 5) { setCatResult(null); setSimilar([]); return; }
+    const res = categorizeTicket(title);
+    setCatResult(res);
+    setSimilar(findSimilarTickets(title, res.category, 3));
+    setPicked(null);
+  }, [title]);
+
+  const handleSubmit = () => {
+    if (!title.trim()) return;
+    const category = catResult?.category ?? "User Question";
+    const ticket: OpsTicket = {
+      id: nextTicketId(),
+      title: title.trim(),
+      summary: description.trim() || title.trim(),
+      domain, team, priority,
+      issueType: category,
+      assignee: "Unassigned",
+      status: "Open",
+      createdMonth: "May 26",
+      ageDays: 0,
+      etaDays: CATEGORY_META[category].slaHours ? Math.ceil(CATEGORY_META[category].slaHours! / 24) : 5,
+      lastUpdated: new Date().toISOString().split("T")[0],
+      suggestedSolution: picked ? { ...picked.sol, pastRef: picked.ref } : undefined,
+    };
+    onSubmit(ticket);
+    onClose();
+  };
+
+  const confBadge = (c?: "High" | "Medium" | "Low") =>
+    c === "High"   ? "text-emerald-700 bg-emerald-50 border-emerald-200"
+    : c === "Medium" ? "text-amber-700 bg-amber-50 border-amber-200"
+    : "text-slate-600 bg-slate-100 border-slate-200";
+
+  return (
+    <>
+      <div className="fixed inset-0 z-40 bg-slate-900/30 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-y-0 right-0 z-50 flex w-[520px] flex-col bg-white shadow-2xl">
+
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-indigo-500">Operations Desk</p>
+            <h2 className="mt-0.5 text-lg font-bold text-slate-900">New Ticket</h2>
+          </div>
+          <button onClick={onClose} className="rounded-xl p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
+            <X size={16} />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-5">
+
+          {/* Title */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1.5">Issue Title <span className="text-red-500">*</span></label>
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Describe the issue in one sentence…"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-indigo-400 focus:bg-white"
+            />
+          </div>
+
+          {/* Live auto-categorisation */}
+          {catResult && (
+            <div className={`rounded-2xl border px-4 py-3 ${CATEGORY_STYLES[catResult.category].border} ${CATEGORY_STYLES[catResult.category].bg}`}>
+              <div className="flex flex-wrap items-center gap-2">
+                {(() => { const Icon = CATEGORY_ICONS[catResult.category]; return <Icon size={13} className={CATEGORY_STYLES[catResult.category].text} />; })()}
+                <p className={`text-xs font-bold ${CATEGORY_STYLES[catResult.category].text}`}>
+                  Auto-categorised: {catResult.category}
+                </p>
+                <span className={`ml-auto text-[10px] font-semibold px-2 py-0.5 rounded-full border ${confBadge(catResult.confidence)}`}>
+                  {catResult.confidence} confidence
+                </span>
+              </div>
+              {catResult.matchedKeywords.length > 0 && (
+                <p className="mt-1.5 text-[11px] text-slate-500">
+                  Matched: {catResult.matchedKeywords.slice(0, 5).join(", ")}
+                </p>
+              )}
+              <p className="mt-1 text-[10px] text-slate-400">SLA: {CATEGORY_META[catResult.category].sla}</p>
+            </div>
+          )}
+
+          {/* Team / Domain / Priority */}
+          <div className="grid grid-cols-3 gap-3">
+            {([
+              ["Team", team, setTeam, ["TMS", "Kinaxis", "Anaplan", "Blue Yonder"]],
+              ["Domain", domain, setDomain, ["Demand", "Supply", "Control Tower"]],
+              ["Priority", priority, setPriority, ["Critical", "High", "Medium", "Low"]],
+            ] as const).map(([label, val, setter, opts]) => (
+              <div key={label}>
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">{label}</label>
+                <select
+                  value={val}
+                  onChange={(e) => (setter as (v: string) => void)(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 outline-none focus:border-indigo-400"
+                >
+                  {(opts as readonly string[]).map((o) => <option key={o}>{o}</option>)}
+                </select>
+              </div>
+            ))}
+          </div>
+
+          {/* Description */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1.5">Description</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={3}
+              placeholder="Additional context, impact, steps to reproduce…"
+              className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-indigo-400 focus:bg-white"
+            />
+          </div>
+
+          {/* Similar past tickets */}
+          {similar.length > 0 && (
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <History size={13} className="text-indigo-400" />
+                <p className="text-xs font-semibold text-slate-700">Similar Past Tickets</p>
+                <span className="ml-auto text-[10px] text-slate-400">Click to use a past solution</span>
+              </div>
+              <div className="space-y-3">
+                {similar.map((t) => {
+                  const s = t.suggestedSolution!;
+                  const isPicked = picked?.ref === t.id;
+                  return (
+                    <div
+                      key={t.id}
+                      className={`rounded-2xl border p-4 transition-all ${isPicked ? "border-indigo-300 bg-indigo-50/60 shadow-sm" : "border-slate-100 bg-slate-50 hover:border-indigo-200"}`}
+                    >
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
+                        <span className="text-[11px] font-bold text-indigo-600">{t.id}</span>
+                        <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${confBadge(s.confidence)}`}>{s.confidence} match</span>
+                        <span className="text-[10px] text-slate-400 ml-auto">Resolved in {s.resolvedInDays}d</span>
+                      </div>
+                      <p className="text-xs font-medium text-slate-700 leading-snug mb-2">{t.title}</p>
+                      <ol className="space-y-1 mb-3">
+                        {s.steps.slice(0, 2).map((step, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-[9px] font-bold text-indigo-600">{i + 1}</span>
+                            <p className="text-[11px] text-slate-600 leading-relaxed">{step}</p>
+                          </li>
+                        ))}
+                        {s.steps.length > 2 && (
+                          <p className="text-[11px] text-slate-400 pl-6">+{s.steps.length - 2} more steps</p>
+                        )}
+                      </ol>
+                      <button
+                        onClick={() => setPicked(isPicked ? null : { sol: s, ref: t.id })}
+                        className={`w-full rounded-xl py-1.5 text-xs font-semibold transition-colors ${isPicked ? "bg-indigo-600 text-white" : "border border-indigo-200 bg-white text-indigo-600 hover:bg-indigo-50"}`}
+                      >
+                        {isPicked ? "✓ Solution selected" : "Use this solution"}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* No similar tickets message */}
+          {catResult && similar.length === 0 && title.trim().length >= 5 && (
+            <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-4 text-center">
+              <History size={16} className="mx-auto mb-1.5 text-slate-300" />
+              <p className="text-xs text-slate-400">No similar past tickets found. This ticket will start a new resolution record.</p>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center gap-3 border-t border-slate-100 px-6 py-4">
+          <button
+            onClick={handleSubmit}
+            disabled={!title.trim()}
+            className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <Plus size={14} />
+            Create Ticket{picked ? " with Solution" : ""}
+          </button>
+          <button
+            onClick={onClose}
+            className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
+
 function CategoryStrip({ tickets, onFilter }: { tickets: OpsTicket[]; onFilter: (cat: string) => void }) {
   const active = tickets.filter((t) => t.status !== "Closed");
   return (
@@ -173,19 +381,27 @@ function CategoryStrip({ tickets, onFilter }: { tickets: OpsTicket[]; onFilter: 
 }
 
 export default function OperationsDeskPage() {
-  const [filters, setFilters] = useState(DEFAULT_FILTERS);
+  const [allTickets, setAllTickets] = useState<OpsTicket[]>(() => OPERATIONS_TICKETS);
+  const [panelOpen, setPanelOpen]   = useState(false);
+  const [filters, setFilters]       = useState(DEFAULT_FILTERS);
   const [expandedTicket, setExpandedTicket] = useState<string | null>(null);
   const [approvedTickets, setApprovedTickets] = useState<Set<string>>(new Set());
+  const [newTicketIds, setNewTicketIds] = useState<Set<string>>(new Set());
   const set = (id: string, value: string) => setFilters((prev) => ({ ...prev, [id]: value }));
   const reset = () => setFilters(DEFAULT_FILTERS);
   const filterByCategory = (cat: string) => setFilters((prev) => ({ ...prev, category: cat }));
+
+  const handleNewTicket = (ticket: OpsTicket) => {
+    setAllTickets((prev) => [ticket, ...prev]);
+    setNewTicketIds((prev) => new Set(prev).add(ticket.id));
+  };
 
   const handleApprove = (id: string) => {
     setApprovedTickets((prev) => new Set(prev).add(id));
     setExpandedTicket(null);
   };
 
-  const filtered = OPERATIONS_TICKETS.filter((ticket) => {
+  const filtered = allTickets.filter((ticket) => {
     if (filters.category !== "All" && ticket.issueType !== filters.category) return false;
     if (filters.status !== "All" && ticket.status !== filters.status) return false;
     if (filters.team !== "All" && ticket.team !== filters.team) return false;
@@ -202,7 +418,7 @@ export default function OperationsDeskPage() {
   const avgOpenAge = openTickets.length ? Number((openTickets.reduce((sum, ticket) => sum + ticket.ageDays, 0) / openTickets.length).toFixed(1)) : 0;
   const avgEta = openTickets.length ? Number((openTickets.reduce((sum, ticket) => sum + ticket.etaDays, 0) / openTickets.length).toFixed(1)) : 0;
   const atRiskCount = openTickets.filter((ticket) => ticket.priority === "Critical" || ticket.ageDays > 120 || ticket.status === "Blocked").length;
-  const trend = buildMonthlyTrend(OPERATIONS_TICKETS);
+  const trend = buildMonthlyTrend(allTickets);
   const topOwners = buildAssigneeLoad(filtered);
   const issueMix = buildIssueMix(filtered);
   const teamBacklog = buildTeamBacklog(filtered);
@@ -220,15 +436,23 @@ export default function OperationsDeskPage() {
           <h1 className="mt-1 text-2xl font-bold text-slate-900">Operational Ticket Dashboard</h1>
           <p className="mt-1 text-sm text-slate-500">Open backlog, ownership, aging, and closure performance in one view.</p>
         </div>
-        <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-white px-4 py-3 shadow-sm">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-indigo-500">Queue Summary</p>
-          <p className="mt-1 max-w-[18rem] text-sm text-slate-600">{openTickets.length} active tickets across {teamCount} teams.</p>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setPanelOpen(true)}
+            className="flex items-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors"
+          >
+            <Plus size={15} /> New Ticket
+          </button>
+          <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-white px-4 py-3 shadow-sm">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-indigo-500">Queue Summary</p>
+            <p className="mt-1 max-w-[18rem] text-sm text-slate-600">{openTickets.length} active tickets across {teamCount} teams.</p>
+          </div>
         </div>
       </div>
 
       <FilterBar filters={FILTERS} values={filters} onChange={set} onReset={reset} />
 
-      <CategoryStrip tickets={OPERATIONS_TICKETS} onFilter={filterByCategory} />
+      <CategoryStrip tickets={allTickets} onFilter={filterByCategory} />
 
       <div className="mb-6 grid grid-cols-2 gap-4 xl:grid-cols-5">
         <MetricCard title="Open Tickets" value={String(openTickets.length)} subtitle="Current active backlog" icon={Ticket} accent="bg-amber-50 text-amber-600" />
@@ -373,7 +597,17 @@ export default function OperationsDeskPage() {
                 return (
                   <>
                     <tr key={ticket.id} className={`border-b border-slate-50 align-top hover:bg-slate-50/70 ${isExpanded ? "bg-indigo-50/30" : ""}`}>
-                      <td className="py-3 pr-4"><div><p className="font-semibold text-slate-900">{ticket.id}</p><p className="text-xs text-slate-400">{ticket.issueType}</p></div></td>
+                      <td className="py-3 pr-4">
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <p className="font-semibold text-slate-900">{ticket.id}</p>
+                            {newTicketIds.has(ticket.id) && (
+                              <span className="rounded-full bg-indigo-100 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-indigo-600">New</span>
+                            )}
+                          </div>
+                          <p className="text-xs text-slate-400">{ticket.issueType}</p>
+                        </div>
+                      </td>
                       <td className="py-3 pr-4"><div className="max-w-[320px]"><p className="font-medium text-slate-800">{ticket.title}</p><p className="mt-1 text-xs leading-relaxed text-slate-500">{ticket.summary}</p></div></td>
                       <td className="py-3 pr-4 text-slate-600">{ticket.domain}</td>
                       <td className="py-3 pr-4 text-slate-600">{ticket.team}</td>
@@ -414,6 +648,9 @@ export default function OperationsDeskPage() {
           </table>
         </div>
       </div>
+      {panelOpen && (
+        <NewTicketPanel onClose={() => setPanelOpen(false)} onSubmit={handleNewTicket} />
+      )}
     </AppShell>
   );
 }

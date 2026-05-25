@@ -420,3 +420,81 @@ export function getPriorityTone(priority: TicketPriority) {
   if (priority === "Medium") return "bg-blue-50 text-blue-700 border-blue-200";
   return "bg-slate-100 text-slate-700 border-slate-200";
 }
+
+// ── Auto-categorisation ────────────────────────────────────────────────────────
+
+const CATEGORY_KEYWORDS: Record<TicketType, string[]> = {
+  Authorization: [
+    "access", "login", "role", "permission", "locked", "lock", "password", "account",
+    "rights", "privilege", "auth", "sso", "unlock", "request", "user", "onboard",
+  ],
+  "System Issue": [
+    "fail", "failure", "error", "hang", "timeout", "batch", "job", "restart",
+    "broken", "slow", "scheduler", "processing", "integration", "crash", "stuck",
+    "not working", "missing output", "not generated", "not refreshing", "mismatch",
+  ],
+  "Data Issue": [
+    "mismatch", "incorrect", "wrong", "duplicate", "missing", "rounding", "rollover",
+    "discrepancy", "variance", "difference", "inaccurate", "inconsistent", "data",
+    "correction", "negative", "published", "export", "offset",
+  ],
+  Refinement: [
+    "improve", "enhance", "update", "change", "modify", "display", "show",
+    "label", "format", "column", "field", "add", "ui", "view", "separate",
+    "dashboard", "card", "tile", "horizon", "missing field",
+  ],
+  "Feature Development": [
+    "automate", "automation", "build", "develop", "integrate", "feature",
+    "workflow", "trigger", "notification", "alert", "digest", "new", "create",
+    "paralleliz", "automated", "report",
+  ],
+  "User Question": [
+    "how", "what", "explain", "help", "guide", "practice", "impact",
+    "when", "why", "difference", "question", "understand", "best",
+  ],
+};
+
+export function categorizeTicket(title: string): {
+  category: TicketType;
+  confidence: "High" | "Medium" | "Low";
+  matchedKeywords: string[];
+} {
+  const words = title.toLowerCase().split(/\W+/).filter((w) => w.length > 2);
+  let best: TicketType = "User Question";
+  let bestScore = 0;
+  let bestMatched: string[] = [];
+
+  for (const [cat, keywords] of Object.entries(CATEGORY_KEYWORDS) as [TicketType, string[]][]) {
+    const matched = keywords.filter((kw) =>
+      words.some((w) => w === kw || w.startsWith(kw) || kw.startsWith(w))
+    );
+    if (matched.length > bestScore) {
+      bestScore = matched.length;
+      best = cat;
+      bestMatched = matched;
+    }
+  }
+
+  const confidence: "High" | "Medium" | "Low" =
+    bestScore >= 3 ? "High" : bestScore >= 1 ? "Medium" : "Low";
+  return { category: best, confidence, matchedKeywords: bestMatched };
+}
+
+export function findSimilarTickets(title: string, category: TicketType, n = 3): Ticket[] {
+  const words = new Set(
+    title.toLowerCase().split(/\W+/).filter((w) => w.length > 3)
+  );
+
+  return OPERATIONS_TICKETS.filter((t) => t.suggestedSolution)
+    .map((t) => {
+      const haystack = new Set(`${t.title} ${t.summary}`.toLowerCase().split(/\W+/));
+      let score = 0;
+      words.forEach((w) => { if (haystack.has(w)) score++; });
+      if (t.issueType === category) score += 2;
+      return { t, score };
+    })
+    .filter((x) => x.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, n)
+    .map((x) => x.t);
+}
